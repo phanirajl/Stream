@@ -15,7 +15,7 @@ import (
 func KafkaListener() (err error) {
 
 	bl := Conf.Kafka.KafkaBrokers
-	topics_list := Conf.Kafka.TopicsListForThisNode
+	topicName := Conf.Kafka.TopicsListForThisNode
 
 	gob.Register(map[string]interface{}{})
 	gob.Register([]interface{}{})
@@ -37,7 +37,7 @@ func KafkaListener() (err error) {
 	var topicsFoundInJson int
 	var topicsInConfig int
 
-	if len(topics_list) == 0 {
+	if len(topicName) == 0 {
 
 		var s string
 
@@ -56,10 +56,10 @@ func KafkaListener() (err error) {
 		return
 	}
 
-	consumer, err := cluster.NewConsumer(bl, "HectorBGWorkers", topics_list, config)
+	consumer, err := cluster.NewConsumer(bl, "HectorBGWorkers", []string{topicName}, config)
 	if err != nil {
 
-		s := fmt.Sprintf("Unable to make consumer, Broker list : %v, Topics_list : %v, Config : %v, got error : %v", bl, topics_list, config, err)
+		s := fmt.Sprintf("Unable to make consumer, Broker list : %v, Topics_list : %v, Config : %v, got error : %v", bl, topicName, config, err)
 		fmt.Println(s)
 		err = errors.New(s)
 		return
@@ -96,7 +96,6 @@ ConsumerLoop:
 				fmt.Println(fmt.Sprintf("Got new kafka message Message Key : %v, Offset : %v, BlockTimestamp : %v", msg.Key, msg.Offset, msg.BlockTimestamp))
 
 				pk := string(msg.Value)
-
 				fmt.Println( fmt.Sprintf("Got message, %v", string(msg.Value)))
 
 				// Get the details from cassandra
@@ -116,21 +115,12 @@ ConsumerLoop:
 				k["results"] = string(out)
 
 				//fmt.Println(fmt.Sprintf("This is what you want : %v", string(message)))
-				fmt.Println(fmt.Sprintf("The message that will go out : %v", k))
+				//fmt.Println(fmt.Sprintf("The message that will go out : %v", k))
 
 				if err != nil {
-
 					fmt.Println("Request could not be processed : Error %v", err)
-				}
-
-				fmt.Println("This is the data from cassandra : %+v", message)
-
-				if err != nil {
-
-					fmt.Println("Request could not be processed : Error ", err)
 					continue
 				}
-
 
 				fmt.Println(fmt.Println("Marking message as consumed -- Got new kafka message Message Key : %v, Offset : %v, BlockTimestamp : %v", msg.Key, msg.Offset, msg.BlockTimestamp))
 				consumer.MarkOffset(msg, "")
@@ -139,6 +129,8 @@ ConsumerLoop:
 
 				fmt.Println("Problem with message that came in : msg is : ", msg)
 			}
+
+
 
 		case <-signals:
 			break ConsumerLoop
