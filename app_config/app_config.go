@@ -48,9 +48,11 @@ type kafka struct {
 	// Used for push
 	EnableKafkaPush bool
 	KafkaBrokers    []string
+	KafkaBrokersCassandra []string
 
 	// List of topics to handle from this node..
 	TopicsListForThisNode string
+	HivePushTopic string
 
 	AvroSchemaFile           string
 	MessageSendRetryAttempts int
@@ -114,7 +116,6 @@ func GetConfiguration() {
 
 		fmt.Println("There were errors during fetching application config")
 		for _, e := range err {
-
 			fmt.Println(e.Error())
 		}
 

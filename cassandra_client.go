@@ -182,7 +182,7 @@ WHERE local_service_requests_new_con5_pk IN (%v) `, pkRef)
 	result, err := iter.SliceMap()
 
 	if err != nil {
-		fmt.Println("ErrorType : QUERY_ERROR, Error fetching details, Error:", err.Error())
+		fmt.Println(fmt.Sprintf("ErrorType : QUERY_ERROR, Error fetching details, Error: %v -- Query : %v", err.Error(), q))
 		return nil, errors.New("QUERY_ERROR, Error fetching details")
 	}
 

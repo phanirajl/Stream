@@ -6,16 +6,16 @@ import (
 	"encoding/json"
 	"github.com/golang/snappy"
 	"os"
-	"io/ioutil"
 	"github.com/Shopify/sarama"
 	"bytes"
 	"encoding/binary"
 	"github.com/linkedin/goavro"
+	"io/ioutil"
 )
 
 var Conf app_config.AppConfig
 
-func main() {
+func mainOld() {
 
 	pk, err := ioutil.ReadAll(os.Stdin)
 	if err != nil {
@@ -167,6 +167,25 @@ func main() {
 //
 //	os.Stdout.Write(out)
 }
+
+func main(){
+
+	fmt.Println("Starting application")
+
+	app_config.GetConfiguration()
+
+	// Set the configuration object
+	Conf = app_config.GetConfig()
+	LoadPool()
+
+	KafkaListener()
+
+	fmt.Println("Exiting application")
+
+}
+
+
+
 
 
 

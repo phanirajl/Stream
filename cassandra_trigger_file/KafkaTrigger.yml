@@ -1,0 +1,2 @@
+bootstrap.servers: 172.17.0.2:9092 
+topic.name: insert_from_cassandra

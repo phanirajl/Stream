@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/linkedin/goavro"
-	"fmt"
 )
 
 type lsr_record struct {
@@ -224,8 +223,6 @@ func (l *lsr_record)getGenericRecord() (grRet map[string]interface{}) {
 	// ret = []interface{}{gr}
 
 	for k, v := range gr {
-
-		fmt.Println("Running Key, ", k)
 
 		if v != nil {
 
