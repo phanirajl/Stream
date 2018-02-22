@@ -65,6 +65,7 @@ type kafka struct {
 	EnableKafkaBackgroundWorkerMode bool
 	HDFSConnPath                    string
 	HdfsStagingFolder               string
+	RecordsPerAvroFile				int
 	HdfsDatabaseFolder              string
 	AvroArchivesFolder              string
 	DisableSnappyCompression        bool
