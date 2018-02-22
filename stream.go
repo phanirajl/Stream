@@ -47,6 +47,8 @@ func main() {
 
 	if pushMode == false {
 
+		logger.SetFilenamePrefix("hdfs.%P.%U", "hdfs.%P.%U")
+
 		logger.Info(fmt.Sprintf("Starting Cassandra listen from stream"))
 		cassErr := LoadPool()
 		if cassErr != nil {
@@ -58,9 +60,11 @@ func main() {
 		}
 	} else {
 
-		fmt.Println("Starting HDFS push from stream")
+		logger.SetFilenamePrefix("cass.%P.%U", "cass.%P.%U")
+
+		logger.Info("Starting HDFS push from stream")
 		HdfsPush()
 	}
 
-	fmt.Println("Exiting application")
+	logger.Info("Exiting application")
 }
