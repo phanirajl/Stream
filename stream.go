@@ -12,7 +12,7 @@ var Conf app_config.AppConfig
 	// TODO: - Change the fmt.Println to proper logging [done]
 	// TODO: - Use the same logging from D30 if needed, its customized as per the requirement [done]
 	// TODO: - Write tests for all the main functions
-	// TODO: - Govendor the application so the libs are all integrated into the applicatoin
+	// TODO: - Govendor the application so the libs are all integrated into the applicatoin [done]
 	// TODO: - The applicatoin needs to have a graceful shutdown happen so it can complete whatever its doing and then exit
 	// TODO: - All the os.Exit(1) that is used everywhere is fine for now, but if 2 threads are running on the same binary then that will get messed up?
 
