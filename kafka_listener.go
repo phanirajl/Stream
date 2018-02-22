@@ -199,6 +199,9 @@ func KafkaProducer(message []map[string]interface{}, wg *sync.WaitGroup) {
 				lsrs := strings.Replace(string(m), `"`, `\"`, -1)
 				vv["local_service_requests_s"] = []string{lsrs}
 			}
+		} else {
+
+			vv["local_service_requests_s"] = []string{""}
 		}
 
 		// Make it into JSON
