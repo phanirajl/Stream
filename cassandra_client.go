@@ -5,16 +5,18 @@ import (
 	"fmt"
 	"github.com/gocql/gocql"
 	"time"
+	"github.com/antigloss/go/logger"
 )
 
 var cassandraSession *gocql.Session
+var cassandraSessionError error
 var cassandraHost []string
 
 var cassandraUID string
 var cassandraPass string
 
 // TODO: This method has to return an error and it should be checked and handled where its called
-func LoadPool() {
+func LoadPool() (err error) {
 
 	cassandraHost = Conf.Cassandra.Host
 	cassandraUID = Conf.Cassandra.Username
@@ -25,7 +27,8 @@ func LoadPool() {
 	cluster := gocql.NewCluster(cassandraHost...)
 
 	// TODO: Database name for casssandra has to come from config -- will need to add an extra field for it
-	cluster.Keyspace = "alltrade_test"
+	//cluster.Keyspace = "alltrade_test"
+	cluster.Keyspace = Conf.Cassandra.KeySpace
 	cluster.ProtoVersion = 3
 	cluster.Timeout = time.Duration(Conf.Cassandra.ConnectionTimeout) * time.Second
 	cluster.SocketKeepalive = time.Duration(Conf.Cassandra.SocketKeepAlive) * time.Second
@@ -36,14 +39,18 @@ func LoadPool() {
 		Password: cassandraPass,
 	}
 
-	var err error
+	//var err error
 
 	cassandraSession, err = cluster.CreateSession()
 
 	if err != nil {
 		// TODO: Return a proper error
-		fmt.Println("ErrorType : INFRA_ERROR - Cassandra Connection could not be established, please check!")
+		logger.Error(fmt.Sprintf("ErrorType : INFRA_ERROR - Cassandra Connection could not be established, please check! %v", err))
+		cassandraSessionError = err
+	} else {
+		cassandraSessionError = nil
 	}
+	return
 }
 
 func GetSession() (retSession *gocql.Session, err error) {
@@ -53,12 +60,13 @@ func GetSession() (retSession *gocql.Session, err error) {
 		LoadPool()
 	}
 
-	if cassandraSession == nil {
+	//if cassandraSession == nil {
+	//
+	//	return nil, errors.New("Could not connect to cassandra")
+	//}
 
-		return nil, errors.New("Could not connect to cassandra")
-	}
-
-	retSession, err = cassandraSession, nil
+	retSession = cassandraSession
+	err = cassandraSessionError
 	return
 }
 

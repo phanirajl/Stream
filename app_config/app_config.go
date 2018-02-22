@@ -30,6 +30,7 @@ type cassandra struct {
 	NumberOfQueryRetries  int
 	ReadConsistency       int
 	WriteConsistency      int
+	KeySpace			  string
 }
 
 type postgresxl struct {
@@ -69,6 +70,7 @@ type kafka struct {
 	HdfsDatabaseFolder              string
 	AvroArchivesFolder              string
 	DisableSnappyCompression        bool
+	MessagesInParallel				int
 
 	// Make zip files or not
 	EnableMovedFilesArchive bool

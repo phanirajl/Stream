@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/dminGod/Stream/app_config"
+	"github.com/antigloss/go/logger"
 )
 
 var Conf app_config.AppConfig
@@ -30,11 +31,14 @@ func main() {
 
 	if pushMode == false {
 
-		fmt.Println("Starting Cassandra listen from stream")
-		LoadPool()
+		logger.Info(fmt.Sprintf("Starting Cassandra listen from stream"))
+		cassErr := LoadPool()
+		if cassErr != nil {
+			logger.Error(fmt.Sprintf("There was an error in loading Cassandra: %v", cassErr))
+		}
 		err := KafkaListener()
 		if err != nil {
-			fmt.Println(fmt.Sprintf("There was an error running the listener: %v", err))
+			logger.Error(fmt.Sprintf("There was an error running the listener: %v", err))
 		}
 	} else {
 

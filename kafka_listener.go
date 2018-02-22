@@ -21,6 +21,11 @@ var codec *goavro.Codec
 
 func KafkaListener() (err error) {
 
+	var messagesInParallel = Conf.Kafka.MessagesInParallel
+
+	if messagesInParallel == 0{
+		messagesInParallel = 10
+	}
 	bl := Conf.Kafka.KafkaBrokers
 	topicName := Conf.Kafka.TopicsListForThisNode
 
@@ -114,7 +119,7 @@ ConsumerLoop:
 			i += 1
 
 			// TODO: Make the number of messages that run in parallel come from configuration
-			if (i % 10) == 0 {
+			if (i % messagesInParallel) == 0 {
 
 				// fmt.Println("Waiting after 10 messages async..")
 				wg.Wait()
