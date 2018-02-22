@@ -9,8 +9,8 @@ import (
 
 var Conf app_config.AppConfig
 
-	// TODO: - Change the fmt.Println to proper logging
-	// TODO: - Use the same logging from D30 if needed, its customized as per the requirement
+	// TODO: - Change the fmt.Println to proper logging [done]
+	// TODO: - Use the same logging from D30 if needed, its customized as per the requirement [done]
 	// TODO: - Write tests for all the main functions
 	// TODO: - Govendor the application so the libs are all integrated into the applicatoin
 	// TODO: - The applicatoin needs to have a graceful shutdown happen so it can complete whatever its doing and then exit
@@ -18,11 +18,27 @@ var Conf app_config.AppConfig
 
 func main() {
 
-	fmt.Println("Starting application")
+	fmt.Println("Starting application..")
 
 	// Set the configuration object
 	app_config.GetConfiguration()
 	Conf = app_config.GetConfig()
+
+	logFolder := Conf.Stream.StreamLogFolder
+
+	if len(logFolder) == 0 {
+		logFolder = "/var/log/"
+	}
+
+	err := logger.Init(Conf.Stream.StreamLogFolder, // specify the directory to save the logfiles
+		800, // maximum logfiles allowed under the specified log directory
+		20,  // number of logfiles to delete when number of logfiles exceeds the configured limit
+		50,     // maximum size of a logfile in MB
+		false, // whether logs with Trace level are written down
+		)
+	if err != nil {
+		fmt.Println("Error in intializing logger, is : ", err)
+	}
 
 	// Get the flag for hdfs_push mode
 	var pushMode bool

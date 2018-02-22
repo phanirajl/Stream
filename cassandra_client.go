@@ -45,7 +45,7 @@ func LoadPool() (err error) {
 
 	if err != nil {
 		// TODO: Return a proper error
-		logger.Error(fmt.Sprintf("ErrorType : INFRA_ERROR - Cassandra Connection could not be established, please check! %v", err))
+		logger.Error("ErrorType : INFRA_ERROR - Cassandra Connection could not be established, please check! %v", err)
 		cassandraSessionError = err
 	} else {
 		cassandraSessionError = nil
@@ -74,13 +74,13 @@ func Select(pkRef string) ([]map[string]interface{}, error) {
 
 	// Check if the array is not blank
 	if len(pkRef) == 0 {
-		fmt.Println("Req : ErrorType : QUERY_ERROR, Query was sent blank, returning")
+		logger.Error("Req : ErrorType : QUERY_ERROR, Query was sent blank, returning")
 		return nil, errors.New("Query was sent blank, returning")
 	}
 
 	session, err := GetSession()
 	if err != nil {
-		fmt.Println("ErrorType : INFRA_ERROR - Cassandra Connection could not be established, please check!", err.Error())
+		logger.Error("ErrorType : INFRA_ERROR - Cassandra Connection could not be established -- Error : %v", err.Error())
 		return nil, errors.New("Cassandra Connection could not be established, please check")
 	}
 
@@ -185,7 +185,7 @@ WHERE local_service_requests_new_con5_pk IN (%v) `, pkRef)
 
 	if err != nil {
 
-		fmt.Println(fmt.Sprintf("ErrorType : QUERY_ERROR, Error fetching details, Error: %v -- Query : %v", err.Error(), q))
+		logger.Error("ErrorType : QUERY_ERROR, Error fetching details, Error: %v -- Query : %v", err.Error(), q)
 		return nil, errors.New("QUERY_ERROR, Error fetching details")
 	}
 

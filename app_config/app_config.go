@@ -15,8 +15,8 @@ type appConfiguration struct {
 	// How to fetch the pgxc_ctl file?
 	EnableHivePush     bool // if
 	EnablePostgresPush bool // if
-	StreamOutputFolder string
 	SchemaId           int
+	StreamLogFolder		string
 }
 
 type cassandra struct {

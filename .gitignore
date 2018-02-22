@@ -8,3 +8,5 @@ stream
 stream.exe
 .idea/workspace.xml
 *.xml
+cassandra_client
+.idea/workspace.xml
