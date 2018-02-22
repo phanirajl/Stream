@@ -11,6 +11,7 @@ import (
 	"encoding/binary"
 	"github.com/linkedin/goavro"
 	"io/ioutil"
+	"flag"
 )
 
 var Conf app_config.AppConfig
@@ -113,7 +114,6 @@ func mainOld() {
 			continue
 		}
 
-
 		var k lsr_record
 
 		err = json.Unmarshal([]byte(tmpJson), &k)
@@ -176,12 +176,23 @@ func main(){
 
 	// Set the configuration object
 	Conf = app_config.GetConfig()
-	LoadPool()
 
-	KafkaListener()
+	var pushMode bool
+
+	flag.BoolVar(&pushMode, "hdfs_push", false, `--hdfs_push Will start the binary in a push mode`)
+	flag.Parse()
+
+	if pushMode == false {
+
+		fmt.Println("Starting Cassandra listen from stream")
+		LoadPool()
+		KafkaListener()
+	} else {
+		fmt.Println("Starting HDFS push from stream")
+		HdfsPush()
+	}
 
 	fmt.Println("Exiting application")
-
 }
 
 

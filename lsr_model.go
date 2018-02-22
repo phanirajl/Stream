@@ -111,10 +111,10 @@ type lsr_record struct {
 }
 
 
-func (l *lsr_record)getGenericRecord() (grRet map[string]interface{}) {
+func (l *lsr_record)getGenericRecord() (ret []interface{}) {
 
 	gr := make(map[string]interface{})
-	grRet = make(map[string]interface{})
+	grRet := make(map[string]interface{})
 
 	gr["local_service_requests_new_con5_pk"] = returnGenericString(l.Local_service_requests_new_con5_pk)
 	gr["actor"] = returnGenericString(l.Actor)
@@ -229,6 +229,8 @@ func (l *lsr_record)getGenericRecord() (grRet map[string]interface{}) {
 			grRet[k] = v
 		}
 	}
+
+	ret = []interface{}{ grRet }
 
 	return
 }
