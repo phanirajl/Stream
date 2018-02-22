@@ -1,10 +1,10 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"github.com/gocql/gocql"
 	"time"
-	"fmt"
-	"errors"
 )
 
 var cassandraSession *gocql.Session
@@ -13,10 +13,8 @@ var cassandraHost []string
 var cassandraUID string
 var cassandraPass string
 
+// TODO: This method has to return an error and it should be checked and handled where its called
 func LoadPool() {
-
-//	fmt.Println("Initializing Cassandra Session")
-
 
 	cassandraHost = Conf.Cassandra.Host
 	cassandraUID = Conf.Cassandra.Username
@@ -25,6 +23,8 @@ func LoadPool() {
 	//gocql.NumConnctions = Conf.Cassandra.NumConnectionsPerHost
 
 	cluster := gocql.NewCluster(cassandraHost...)
+
+	// TODO: Database name for casssandra has to come from config -- will need to add an extra field for it
 	cluster.Keyspace = "alltrade_test"
 	cluster.ProtoVersion = 3
 	cluster.Timeout = time.Duration(Conf.Cassandra.ConnectionTimeout) * time.Second
@@ -32,7 +32,6 @@ func LoadPool() {
 	cluster.RetryPolicy = &gocql.SimpleRetryPolicy{NumRetries: Conf.Cassandra.NumberOfQueryRetries}
 
 	cluster.Authenticator = gocql.PasswordAuthenticator{
-
 		Username: cassandraUID,
 		Password: cassandraPass,
 	}
@@ -40,20 +39,17 @@ func LoadPool() {
 	var err error
 
 	cassandraSession, err = cluster.CreateSession()
-//	fmt.Println("Cassandra Configuration", cassandraSession)
 
 	if err != nil {
-
+		// TODO: Return a proper error
 		fmt.Println("ErrorType : INFRA_ERROR - Cassandra Connection could not be established, please check!")
 	}
 }
 
 func GetSession() (retSession *gocql.Session, err error) {
 
-//	fmt.Println("CassandraSession", cassandraSession)
-
 	if cassandraSession == nil {
-
+		// TODO: From LoadPool, send the actual error out, bubble that error out and use that
 		LoadPool()
 	}
 
@@ -66,7 +62,7 @@ func GetSession() (retSession *gocql.Session, err error) {
 	return
 }
 
-func Select(pkRef string) ( []map[string]interface{}, error ) {
+func Select(pkRef string) ([]map[string]interface{}, error) {
 
 	// Check if the array is not blank
 	if len(pkRef) == 0 {
@@ -176,12 +172,11 @@ func Select(pkRef string) ( []map[string]interface{}, error ) {
 FROM alltrade_test.local_service_requests_new_con5
 WHERE local_service_requests_new_con5_pk IN (%v) `, pkRef)
 
-//	fmt.Println("Running the cassandra select query : " + q)
-
 	iter := session.Query(q).Iter()
 	result, err := iter.SliceMap()
 
 	if err != nil {
+
 		fmt.Println(fmt.Sprintf("ErrorType : QUERY_ERROR, Error fetching details, Error: %v -- Query : %v", err.Error(), q))
 		return nil, errors.New("QUERY_ERROR, Error fetching details")
 	}

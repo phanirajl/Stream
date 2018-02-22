@@ -1,3 +1,3 @@
 del stream.exe
 set GOOS=linux
-go build stream.go kafka_listener.go cassandra_client.go lsr_model.go hdfs_push.go
+go build cassandra_client.go generic_record.go hdfs_push.go kafka_listener.go lsr_model.go postgres.go stream.go

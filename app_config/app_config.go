@@ -9,16 +9,18 @@ import (
 	"strings"
 )
 
+// TODO : Some of the configuration items are from older structs from D50 code that was written -- Need to remove the useless ones
 type appConfiguration struct {
 
 	// How to fetch the pgxc_ctl file?
-	EnableHivePush bool // if
+	EnableHivePush     bool // if
 	EnablePostgresPush bool // if
 	StreamOutputFolder string
-	SchemaId int
+	SchemaId           int
 }
 
 type cassandra struct {
+
 	Host                  []string
 	Username              string
 	Password              string
@@ -31,6 +33,7 @@ type cassandra struct {
 }
 
 type postgresxl struct {
+
 	Username              string
 	Password              string
 	Database              string
@@ -46,13 +49,13 @@ type postgresxl struct {
 type kafka struct {
 
 	// Used for push
-	EnableKafkaPush bool
-	KafkaBrokers    []string
+	EnableKafkaPush       bool
+	KafkaBrokers          []string
 	KafkaBrokersCassandra []string
 
 	// List of topics to handle from this node..
 	TopicsListForThisNode string
-	HivePushTopic string
+	HivePushTopic         string
 
 	AvroSchemaFile           string
 	MessageSendRetryAttempts int
@@ -104,7 +107,6 @@ var Config AppConfig
 func init() {
 
 	GetConfiguration()
-
 }
 
 //GetConfiguration gets the configuration details from the .toml file
