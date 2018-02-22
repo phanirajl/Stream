@@ -77,6 +77,8 @@ type kafka struct {
 
 	FileMovementIntervalSec      int
 	ArchiveMovedFilesIntervalSec int
+
+	SchemaFile			 string
 }
 
 //AppConfig stores all the information regarding servers, database, applications
