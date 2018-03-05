@@ -131,15 +131,17 @@ ConsumerLoop:
 				// fmt.Println("Waiting after 10 messages async..")
 				wg.Wait()
 			}
-
+//
 			wg.Add(1)
-
+//
 			if ok {
 
-				// fmt.Println(fmt.Sprintf("Got new kafka message Message Key : %v, Offset : %v, BlockTimestamp : %v", msg.Key, msg.Offset, msg.BlockTimestamp))
+				//fmt.Println(fmt.Sprintf("Got new kafka message Message Key : %v, Offset : %v, BlockTimestamp : %v", msg.Key, msg.Offset, msg.BlockTimestamp))
 				pk := string(msg.Value)
 
 				// Get the details from cassandra
+
+				//pk := "3b257f21-0725-490e-881b-a00fbf65c0a0"
 				message, err := Select(pk)
 				if err != nil {
 					logger.Error("Error processing cassandra request, Error : %v -- Exiting", err)

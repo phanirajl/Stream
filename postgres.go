@@ -10,18 +10,16 @@ import (
 	"errors"
 	"os"
 	"os/signal"
-	//"strings"
-	//"time"
 	//"github.com/gocql/gocql"
 	"encoding/json"
 	"github.com/golang/snappy"
 	"strings"
 	"database/sql"
 	_ "github.com/lib/pq"
-	//"github.com/Shopify/sarama"
-	"github.com/Shopify/sarama"
+
 	"time"
 	"math/rand"
+	"github.com/Shopify/sarama"
 )
 
 //var dbHost, dbPort, dbUser, dbPass, dbName string
@@ -41,15 +39,6 @@ func PostgresPush(){
 	config.Consumer.Return.Errors = true
 	config.Group.Return.Notifications = true
 
-	//schemaFile := Conf.Kafka.SchemaFile
-
-	//schemaFileLocation = strings.TrimRight(schemaFileLocation, "/")
-
-	//b, err := ioutil.ReadFile(fmt.Sprintf("%v",schemaFile))
-	//if err != nil {
-	//	logger.Error("There was an error in opening the schema file",err)
-	//}
-	//codec, err = goavro.NewCodec(fmt.Sprintf(string(b), topicName))
 
 	if len(bl) == 0 {
 
@@ -89,17 +78,6 @@ func PostgresPush(){
 		}
 	}()
 
-
-
-
-	//fmt.Printf("Trying to connect")
-	//connection, err := sql.Open("postgres", dbInfo)
-	//if err != nil {
-	//
-	//	fmt.Println("There was an error with the connction", err)
-	//	os.Exit(1)
-	//}
-
 	connection, errdb := getConnection()
 
 	if errdb != nil {
@@ -118,21 +96,7 @@ ConsumerLoop:
 
 			if ok {
 
-
-
-				//sdc := msg.Value
-				//sdc, err := snappy.Decode(nil, msg.Value)
-				////s := []byte(fmt.Sprintf(`%v`,sdc))
-				//if err != nil {
-				//
-				//	logger.Error("Error decoding snappy message, Error : %v", err)
-				//	os.Exit(1)
-				//}
-				//fmt.Printf("there was a message")
 				q := GenerateQuery(msg)
-
-				//fmt.Printf("the generated query is %v", q)
-
 				_, err = connection.Exec(q)
 				if err != nil {
 
@@ -158,7 +122,7 @@ ConsumerLoop:
 }
 
 func GenerateQuery(msg *sarama.ConsumerMessage) (q string){
-	//func GenerateQuery() (q string){
+//func GenerateQuery(msg []byte) (q string){
 	//fmt.Printf("came here")
 	var tbName = "local_service_requests_new_con5"
 	sdc := msg.Value
@@ -239,7 +203,7 @@ func GenerateQuery(msg *sarama.ConsumerMessage) (q string){
 
 					dt := int64((vv / 1000) * 1000)
 
-					keys += fmt.Sprintf("%v,", "int_created_date")
+					keys += fmt.Sprintf("%v,", "int_created_date_cass")
 					vals += fmt.Sprintf("to_timestamp(%v),", dt)
 
 					continue

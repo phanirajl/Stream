@@ -46,7 +46,6 @@ func main() {
 	//Get the flag for hdfs_push mode
 	var pushMode bool
 	flag.BoolVar(&pushMode, "hdfs_push", false, `--hdfs_push Will start the binary in a push mode`)
-	//flag.Parse()
 
 	flag.BoolVar(&postMode, "post_push", false, `--post_push Will start the binary in a postgres push mode`)
 	flag.Parse()
