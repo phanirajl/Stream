@@ -10,12 +10,16 @@ import (
 
 var Conf app_config.AppConfig
 
-// TODO: - Change the fmt.Println to proper logging [done]
-// TODO: - Use the same logging from D30 if needed, its customized as per the requirement [done]
-// TODO: - Write tests for all the main functions
-// TODO: - Govendor the application so the libs are all integrated into the applicatoin [done]
-// TODO: - The applicatoin needs to have a graceful shutdown happen so it can complete whatever its doing and then exit
+
+
 // TODO: - All the os.Exit(1) that is used everywhere is fine for now, but if 2 threads are running on the same binary then that will get messed up?
+// TODO: - !! The applicatoin needs to have a graceful shutdown happen so it can complete whatever its doing and then exit
+// TODO: - !! If a file is written to disk and then not moved to HDFS then it should get moved to HDFS
+
+// TODO: - !! Where is the crack, where are the messages failing -- How are we handling the failing messages?
+// TODO: - !! Write tests for all the main functions
+
+// Done: - You can actually unify the whole thing
 
 func main() {
 
@@ -28,6 +32,7 @@ func main() {
 	logFolder := Conf.Stream.StreamLogFolder
 
 	if len(logFolder) == 0 {
+
 		logFolder = "/var/log/"
 	}
 
@@ -51,17 +56,12 @@ func main() {
 	flag.Parse()
 
 	if postMode == true{
+
 		logger.SetFilenamePrefix("post.%P.%U", "post.%P.%U")
 		logger.Info("Starting postgres push from stream")
 		LoadPostgres()
 		time.Sleep(5 * time.Second)
 		PostgresPush()
-
-	} else if pushMode == true {
-		logger.SetFilenamePrefix("cass.%P.%U", "cass.%P.%U")
-
-		logger.Info("Starting HDFS push from stream")
-		HdfsPush()
 
 	} else {
 
@@ -77,5 +77,6 @@ func main() {
 			logger.Error(fmt.Sprintf("There was an error running the listener: %v", err))
 		}
 	}
+
 	logger.Info("Exiting application")
 }
