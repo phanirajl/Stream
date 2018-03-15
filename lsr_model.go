@@ -1,5 +1,11 @@
 package main
 
+import (
+	"time"
+	"strings"
+	"fmt"
+)
+
 type lsr_record struct {
 	Local_service_requests_new_con5_pk string   `"json":"local_service_requests_new_con5_pk"`
 	Actor                              string   `"json":"actor"`
@@ -108,6 +114,10 @@ type lsr_record struct {
 
 func (l *lsr_record) getGenericRecord() (ret []interface{}) {
 
+	t := time.Now()
+	nn := t.UnixNano()
+	tm := nn / 1000000
+	ts := t.Format("2006-01-02 15:04:05-0700")
 	gr := make(map[string]interface{})
 	grRet := make(map[string]interface{})
 
@@ -166,8 +176,10 @@ func (l *lsr_record) getGenericRecord() (ret []interface{}) {
 	gr["wo_header_status_key"] = returnGenericStringArray(l.Wo_header_status_key)
 	gr["wo_header_error_date_key"] = returnGenericStringArray(l.Wo_header_error_date_key)
 	gr["bso_error_date_key"] = returnGenericStringArray(l.Bso_error_date_key)
-	gr["int_created_date"] = returnGenericStringInt(l.Int_created_date)
-	gr["int_created_date_str"] = returnGenericString(l.Int_created_date_str)
+	gr["int_created_date"] = returnGenericStringInt(tm)
+	gr["int_created_date_str"] = returnGenericString(ts)
+	gr["int_created_date_cass"] = returnGenericStringInt(l.Int_created_date)
+	gr["int_created_date_cass_str"] = returnGenericString(l.Int_created_date_str)
 	gr["int_updated_date"] = returnGenericStringInt(l.Int_updated_date)
 	gr["int_updated_date_str"] = returnGenericString(l.Int_updated_date_str)
 	gr["int_is_deleted"] = returnGenericString(l.Int_is_deleted)
@@ -223,6 +235,159 @@ func (l *lsr_record) getGenericRecord() (ret []interface{}) {
 	}
 
 	ret = []interface{}{grRet}
+
+	return
+}
+
+
+var arrFields  = []string{"application_detail","bano","bso_key","bwo_id","bso_status_key","bso_error_message_key","destination","imsi_key","local_service_requests_s","msisdn_key","order_sub_type","order_item_status_key","order_item_error_message_key","order_item_error_date_key","product_name_key","promotion_action_key","promotion_code_key","request_id","resp_status","service_action_key","service_code_key","subscriberid1_key","subscriberid2_key","subscriberid3_key","wo_header_error_message_key","wo_header_status_key","wo_header_error_date_key","bso_error_date_key","val1_key","val2_key","val3_key","val4_key","val5_key","val6_key","val7_key","val8_key","val9_key","val10_key","val11_key","val12_key","val13_key","val14_key","val15_key","val16_key","val17_key","val18_key","val19_key","val20_key"}
+var intFields  = []string{"retry_count"}
+
+var timeFields = []string{"order_date", "submitted_date","int_created_date","int_updated_date","order_info_error_date_new","order_info_error_date_time","order_info_error_date"}
+
+func  MakePgQuery(tab string, record map[string]interface{}) (ret string) {
+
+
+
+
+	var keys, vals string
+
+	for vv, kk  := range record {
+
+		switch inWhichArr(vv) {
+
+		case "arrs":
+			keys += vv + ","
+			vals += fmt.Sprintf("ARRAY['%v']::text[],", kk)
+
+			//fmt.Printf("ARRAY[%v]::text[],\n", kk)
+
+		case "ints":
+
+
+
+
+			keys += vv + ","
+			vals += fmt.Sprintf("%v,", kk)
+
+		case "timestamp":
+			//
+
+			if vv == "int_created_date_cass" { continue }
+			if vv == "int_created_date_cas" { continue }
+
+			if vv == "int_created_date" {
+
+				if _,ok:=kk.(int); ok {
+					dt := int64((kk.(int) / 1000) * 1000)
+
+					keys += fmt.Sprintf("%v,", "int_created_date_cass")
+					vals += fmt.Sprintf("to_timestamp(%v),", dt)
+
+					continue
+				} else {
+					if _,ok:=kk.(int64); ok {
+						dt := int64((kk.(int64) / 1000) * 1000)
+
+						keys += fmt.Sprintf("%v,", "int_created_date_cass")
+						vals += fmt.Sprintf("to_timestamp(%v),", dt)
+
+						continue
+					}
+
+				}
+			}
+
+			if vv == "int_updated_date" || vv == "order_date" || vv == "submitted_date" || vv == "int_updated_date" || vv == "order_info_error_date_new" || vv == "order_info_error_date_time" || vv == "order_info_error_date"{
+				if _,ok:=kk.(int); ok {
+					dt := int64((kk.(int) / 1000) * 1000)
+
+					keys += fmt.Sprintf("%v,", vv)
+					vals += fmt.Sprintf("to_timestamp(%v),", dt)
+
+					continue
+				} else {
+					if _,ok:=kk.(int64); ok {
+						dt := int64((kk.(int64) / 1000) * 1000)
+
+						keys += fmt.Sprintf("%v,", vv)
+						vals += fmt.Sprintf("to_timestamp(%v),", dt)
+
+						continue
+					}
+
+				}
+
+
+				//continue
+			}
+
+
+			if _,ok:=kk.(int); ok {
+				dt := int64((kk.(int) / 1000) * 1000)
+				keys += fmt.Sprintf("%v,", vv)
+
+				if dt > 1000000 {
+
+					vals += fmt.Sprintf("to_timestamp(%v),", dt)
+				} else {
+
+					vals += fmt.Sprintf("%v,", dt)
+				}
+			} else {
+
+				if _,ok:=kk.(int64); ok {
+					dt := int64((kk.(int64) / 1000) * 1000)
+					keys += fmt.Sprintf("%v,", vv)
+
+					if dt > 1000000 {
+
+						vals += fmt.Sprintf("to_timestamp(%v),", dt)
+					} else {
+
+						vals += fmt.Sprintf("%v,", dt)
+					}
+				}
+
+			}
+
+
+
+			//keys += vv + ","
+			//vals += fmt.Sprintf("ARRAY[%v]::text,", vv, m[vv])
+
+		default:
+			keys += vv + ","
+			vals += fmt.Sprintf("'%v',", kk)
+		}
+	}
+
+	keys = strings.TrimRight(keys, ",")
+	vals = strings.TrimRight(vals, ",")
+
+	ret += fmt.Sprintf("INSERT INTO %v (%v) VALUES (%v)", tab, keys, vals)
+
+	return
+}
+
+
+func inWhichArr(str string) (ret string) {
+
+	for kk, vv := range map[string][]string{"arrs" : arrFields, "ints" : intFields, "timestamp" : timeFields} {
+
+		if ret == "" {
+
+			for _, v := range vv {
+
+				if v == str {
+					ret = kk
+				}
+			}
+		} else {
+
+			break
+		}
+	}
 
 	return
 }
