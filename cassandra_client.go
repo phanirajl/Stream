@@ -180,13 +180,17 @@ func Select(pkRef string) ([]map[string]interface{}, error) {
 FROM alltrade_test.local_service_requests_new_con5
 WHERE local_service_requests_new_con5_pk IN (%v) `, pkRef)
 
+	// Set the read consistency
+	// TODO: This should come from the config
+	session.SetConsistency(gocql.One)
+
 	iter := session.Query(q).Iter()
 	result, err := iter.SliceMap()
 
 	if err != nil {
 
 		logger.Error("ErrorType : QUERY_ERROR, Error fetching details, Error: %v -- Query : %v", err.Error(), q)
-		return nil, errors.New("QUERY_ERROR, Error fetching details")
+		return nil, errors.New(fmt.Sprintf("QUERY_ERROR, Error fetching details - Error : %v - Query : %v ", err.Error(), q ))
 	}
 
 	return result, nil
