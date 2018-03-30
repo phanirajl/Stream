@@ -1,39 +1,34 @@
 package main
 
 import (
-
+	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/antigloss/go/logger"
-	"errors"
-	"os"
 	"github.com/golang/snappy"
-	"strings"
-	"database/sql"
 	_ "github.com/lib/pq"
+	"os"
+	"strings"
 
-	"time"
-	"math/rand"
 	"github.com/bsm/sarama-cluster"
+	"math/rand"
 	"os/signal"
+	"time"
 )
 
 //var dbHost, dbPort, dbUser, dbPass, dbName string
 var dbpool []*sql.DB
 
-
-
 // TODO : Write logic to make inserts into Postgres-XL as well.
 
-func PostgresPush(){
+func PostgresPush() {
 
 	bl := Conf.Kafka.KafkaBrokers
 	topicName := Conf.Kafka.TopicsListForThisNode
 
-
 	config := cluster.NewConfig()
 	config.Consumer.Return.Errors = true
 	config.Group.Return.Notifications = true
-
 
 	if len(bl) == 0 {
 
@@ -82,12 +77,10 @@ func PostgresPush(){
 
 	}
 
-
 ConsumerLoop:
 	for {
 		select {
 		case msg, ok := <-consumer.Messages():
-
 
 			if ok {
 
@@ -107,7 +100,6 @@ ConsumerLoop:
 
 				q := GenerateQuery(message)
 
-
 				//q := GenerateQuery(msg)
 				_, err = connection.Exec(q)
 				if err != nil {
@@ -116,9 +108,7 @@ ConsumerLoop:
 					os.Exit(1)
 				}
 
-
 				connection.Close()
-
 
 				consumer.MarkOffset(msg, "")
 			} else {
@@ -164,19 +154,16 @@ func GenerateQuery(message []map[string]interface{}) (q string) {
 			vv["local_service_requests_s"] = []string{""}
 		}
 
-
-
-		q  = MakePgQuery(tbName, vv)
-
+		q = MakePgQuery(tbName, vv)
 
 		//q = fmt.Sprintf("INSERT INTO %v (%v) VALUES (%v);", tbName, keys, vals)
-		fmt.Printf("\ninsert stmt %v\n",q)
+		fmt.Printf("\ninsert stmt %v\n", q)
 		//os.Stdout.Write([]byte(q))
-
 
 	}
 	return
 }
+
 //func GenerateQuery(msg *sarama.ConsumerMessage) (q string){
 ////func GenerateQuery(msg []byte) (q string){
 //	//fmt.Printf("came here")
@@ -356,7 +343,6 @@ func GenerateQuery(message []map[string]interface{}) (q string) {
 //
 //}
 
-
 func getConnection() (*sql.DB, error) {
 
 	checkCount := 0
@@ -400,8 +386,6 @@ getNew:
 
 	return nil, errors.New("Error in establishing connection")
 }
-
-
 
 func LoadPostgres() {
 

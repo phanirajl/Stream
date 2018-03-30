@@ -16,11 +16,10 @@ type appConfiguration struct {
 	EnableHivePush     bool // if
 	EnablePostgresPush bool // if
 	SchemaId           int
-	StreamLogFolder		string
+	StreamLogFolder    string
 }
 
 type cassandra struct {
-
 	Host                  []string
 	Username              string
 	Password              string
@@ -30,11 +29,10 @@ type cassandra struct {
 	NumberOfQueryRetries  int
 	ReadConsistency       int
 	WriteConsistency      int
-	KeySpace			  string
+	KeySpace              string
 }
 
 type postgresxl struct {
-
 	Username              string
 	Password              string
 	Database              string
@@ -50,35 +48,35 @@ type postgresxl struct {
 type kafka struct {
 
 	// Used for push
-	EnableKafkaPush       bool
+	EnableKafkaPush       bool 	// remove
 	KafkaBrokers          []string
-	KafkaBrokersCassandra []string
+	KafkaBrokersCassandra []string	// remove
 
 	// List of topics to handle from this node..
-	TopicsListForThisNode string
-	HivePushTopic         string
+	TopicsListForThisNode string	// remove -- make this an array of string
+	HivePushTopic         string	// remove
 
-	AvroSchemaFile           string
+	AvroSchemaFile           string		// remove
 	MessageSendRetryAttempts int
-	FlushFrequencyMilliSec   int // Milliseconds
+	FlushFrequencyMilliSec   int 		// Use this?
 
 	// Enable background worker
-	EnableKafkaBackgroundWorkerMode bool
+	EnableKafkaBackgroundWorkerMode bool		// remove
 	HDFSConnPath                    string
 	HdfsStagingFolder               string
-	RecordsPerAvroFile				int
-	HdfsDatabaseFolder              string
-	AvroArchivesFolder              string
-	DisableSnappyCompression        bool
-	MessagesInParallel				int
+	RecordsPerAvroFile              int
+	HdfsDatabaseFolder              string		// remove
+	AvroArchivesFolder              string		// ??
+	DisableSnappyCompression        bool		// ??
+	MessagesInParallel              int			// remove
 
 	// Make zip files or not
-	EnableMovedFilesArchive bool
+	EnableMovedFilesArchive bool				// remove
 
-	FileMovementIntervalSec      int
-	ArchiveMovedFilesIntervalSec int
+	FileMovementIntervalSec      int		// remove
+	ArchiveMovedFilesIntervalSec int		// remove
 
-	SchemaFile			 string
+	SchemaFile string						// remove
 }
 
 //AppConfig stores all the information regarding servers, database, applications
@@ -160,13 +158,6 @@ func GetConfig() AppConfig {
 		GetConfiguration()
 	}
 	return Config
-
-}
-
-//ShowConfig shows the configuration from the .toml file
-func ShowConfig() {
-
-	fmt.Println(viConfig.AllSettings())
 
 }
 

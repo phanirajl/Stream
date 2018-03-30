@@ -1,12 +1,13 @@
 package main
 
 import (
-	"time"
-	"strings"
 	"fmt"
+	"strings"
+	"time"
 )
 
 type lsr_record struct {
+
 	Local_service_requests_new_con5_pk string
 	Actor                              string
 	Application_detail                 []string
@@ -51,66 +52,65 @@ type lsr_record struct {
 	Service_action_key                 []string
 	Service_code_key                   []string
 	Sim_serial_no                      string
-	Submitted_date                     int64    
-	Submitted_date_str                 string   
-	Subscriberid1_key                  []string 
-	Subscriberid2_key                  []string 
-	Subscriberid3_key                  []string 
-	User_id                            string   
-	User_sys                           string   
-	Wo_header_error_message_key        []string 
-	Wo_header_status_key               []string 
-	Wo_header_error_date_key           []string 
-	Bso_error_date_key                 []string 
-	Int_created_date                   int64    
-	Int_created_date_str               string   
-	Int_updated_date                   int64    
+	Submitted_date                     int64
+	Submitted_date_str                 string
+	Subscriberid1_key                  []string
+	Subscriberid2_key                  []string
+	Subscriberid3_key                  []string
+	User_id                            string
+	User_sys                           string
+	Wo_header_error_message_key        []string
+	Wo_header_status_key               []string
+	Wo_header_error_date_key           []string
+	Bso_error_date_key                 []string
+	Int_created_date                   int64
+	Int_created_date_str               string
+	Int_updated_date                   int64
 	Int_updated_date_str               string
-
-	Int_is_deleted                     string   
-	Order_info_error_date_new          int64    
-	Order_info_error_date_new_str      string   
-	Order_info_error_date_time         int64    
-	Order_info_error_date_time_str     string   
-	Order_info_error_date              int64    
-	Order_info_error_date_str          string   
-	Request_id_int_field               string   
-	Bwo_id_int_field                   string   
-	Retry_count                        int64    
-	Val1_key                           []string 
-	Val2_key                           []string 
-	Val3_key                           []string 
-	Val4_key                           []string 
-	Val5_key                           []string 
-	Val6_key                           []string 
-	Val7_key                           []string 
-	Val8_key                           []string 
-	Val9_key                           []string 
-	Val10_key                          []string 
-	Val1                               string   
-	Val2                               string   
-	Val3                               string   
-	Val4                               string   
-	Val5                               string   
-	Val6                               string   
-	Val7                               string   
-	Val8                               string   
-	Val9                               string   
-	Val10                              string   
-	Resend_flag                        string   
-	File_name                          string   
-	Ref_id                             string   
-	Lot_no                             string   
-	Val11_key                          []string 
-	Val12_key                          []string 
-	Val13_key                          []string 
-	Val14_key                          []string 
-	Val15_key                          []string 
-	Val16_key                          []string 
-	Val17_key                          []string 
-	Val18_key                          []string 
-	Val19_key                          []string 
-	Val20_key                          []string 
+	Int_is_deleted                     string
+	Order_info_error_date_new          int64
+	Order_info_error_date_new_str      string
+	Order_info_error_date_time         int64
+	Order_info_error_date_time_str     string
+	Order_info_error_date              int64
+	Order_info_error_date_str          string
+	Request_id_int_field               string
+	Bwo_id_int_field                   string
+	Retry_count                        int64
+	Val1_key                           []string
+	Val2_key                           []string
+	Val3_key                           []string
+	Val4_key                           []string
+	Val5_key                           []string
+	Val6_key                           []string
+	Val7_key                           []string
+	Val8_key                           []string
+	Val9_key                           []string
+	Val10_key                          []string
+	Val1                               string
+	Val2                               string
+	Val3                               string
+	Val4                               string
+	Val5                               string
+	Val6                               string
+	Val7                               string
+	Val8                               string
+	Val9                               string
+	Val10                              string
+	Resend_flag                        string
+	File_name                          string
+	Ref_id                             string
+	Lot_no                             string
+	Val11_key                          []string
+	Val12_key                          []string
+	Val13_key                          []string
+	Val14_key                          []string
+	Val15_key                          []string
+	Val16_key                          []string
+	Val17_key                          []string
+	Val18_key                          []string
+	Val19_key                          []string
+	Val20_key                          []string
 }
 
 func (l *lsr_record) getGenericRecord() (ret []interface{}) {
@@ -177,14 +177,11 @@ func (l *lsr_record) getGenericRecord() (ret []interface{}) {
 	gr["wo_header_status_key"] = returnGenericStringArray(l.Wo_header_status_key)
 	gr["wo_header_error_date_key"] = returnGenericStringArray(l.Wo_header_error_date_key)
 	gr["bso_error_date_key"] = returnGenericStringArray(l.Bso_error_date_key)
-	gr["int_created_date"] = returnGenericStringInt(tm)
-	gr["int_created_date_str"] = returnGenericString(ts)
-	// gr["int_created_date_cass"] = returnGenericStringInt(l.Int_created_date)
-
-	gr["int_created_date_cass"] = returnGenericTimeString(l.Int_created_date)
-	gr["int_cass_stream_diff"] = returnGenericTimeDiff(t, l.Int_created_date)
-
-	gr["int_created_date_cass_str"] = returnGenericString(l.Int_created_date_str)
+	gr["int_created_date"] = returnGenericStringInt(tm) 	// Diff
+	gr["int_created_date_str"] = returnGenericString(ts) 	// Diff
+	gr["int_created_date_cass"] = returnGenericTimeString(l.Int_created_date)	// Diff
+	gr["int_cass_stream_diff"] = returnGenericTimeDiff(t, l.Int_created_date)	// Diff
+	gr["int_created_date_cass_str"] = returnGenericString(l.Int_created_date_str) // Diff
 	gr["int_updated_date"] = returnGenericStringInt(l.Int_updated_date)
 	gr["int_updated_date_str"] = returnGenericString(l.Int_updated_date_str)
 	gr["int_is_deleted"] = returnGenericString(l.Int_is_deleted)
@@ -233,31 +230,24 @@ func (l *lsr_record) getGenericRecord() (ret []interface{}) {
 	gr["val20_key"] = returnGenericStringArray(l.Val20_key)
 
 	for k, v := range gr {
-
 		if v != nil {
 			grRet[k] = v
 		}
 	}
 
-	ret = []interface{}{grRet}
-
+	ret = []interface{}{ grRet }
 	return
 }
 
+var arrFields = []string{"application_detail", "bano", "bso_key", "bwo_id", "bso_status_key", "bso_error_message_key", "destination", "imsi_key", "local_service_requests_s", "msisdn_key", "order_sub_type", "order_item_status_key", "order_item_error_message_key", "order_item_error_date_key", "product_name_key", "promotion_action_key", "promotion_code_key", "request_id", "resp_status", "service_action_key", "service_code_key", "subscriberid1_key", "subscriberid2_key", "subscriberid3_key", "wo_header_error_message_key", "wo_header_status_key", "wo_header_error_date_key", "bso_error_date_key", "val1_key", "val2_key", "val3_key", "val4_key", "val5_key", "val6_key", "val7_key", "val8_key", "val9_key", "val10_key", "val11_key", "val12_key", "val13_key", "val14_key", "val15_key", "val16_key", "val17_key", "val18_key", "val19_key", "val20_key"}
+var intFields = []string{"retry_count"}
+var timeFields = []string{"order_date", "submitted_date", "int_created_date", "int_updated_date", "order_info_error_date_new", "order_info_error_date_time", "order_info_error_date"}
 
-var arrFields  = []string{"application_detail","bano","bso_key","bwo_id","bso_status_key","bso_error_message_key","destination","imsi_key","local_service_requests_s","msisdn_key","order_sub_type","order_item_status_key","order_item_error_message_key","order_item_error_date_key","product_name_key","promotion_action_key","promotion_code_key","request_id","resp_status","service_action_key","service_code_key","subscriberid1_key","subscriberid2_key","subscriberid3_key","wo_header_error_message_key","wo_header_status_key","wo_header_error_date_key","bso_error_date_key","val1_key","val2_key","val3_key","val4_key","val5_key","val6_key","val7_key","val8_key","val9_key","val10_key","val11_key","val12_key","val13_key","val14_key","val15_key","val16_key","val17_key","val18_key","val19_key","val20_key"}
-var intFields  = []string{"retry_count"}
-
-var timeFields = []string{"order_date", "submitted_date","int_created_date","int_updated_date","order_info_error_date_new","order_info_error_date_time","order_info_error_date"}
-
-func  MakePgQuery(tab string, record map[string]interface{}) (ret string) {
-
-
-
+func MakePgQuery(tab string, record map[string]interface{}) (ret string) {
 
 	var keys, vals string
 
-	for vv, kk  := range record {
+	for vv, kk := range record {
 
 		switch inWhichArr(vv) {
 
@@ -265,25 +255,21 @@ func  MakePgQuery(tab string, record map[string]interface{}) (ret string) {
 			keys += vv + ","
 			vals += fmt.Sprintf("ARRAY['%v']::text[],", kk)
 
-			//fmt.Printf("ARRAY[%v]::text[],\n", kk)
-
 		case "ints":
-
-
-
-
 			keys += vv + ","
 			vals += fmt.Sprintf("%v,", kk)
 
 		case "timestamp":
-			//
-
-			if vv == "int_created_date_cass" { continue }
-			if vv == "int_created_date_cas" { continue }
+			if vv == "int_created_date_cass" {
+				continue
+			}
+			if vv == "int_created_date_cas" {
+				continue
+			}
 
 			if vv == "int_created_date" {
 
-				if _,ok:=kk.(int); ok {
+				if _, ok := kk.(int); ok {
 					dt := int64((kk.(int) / 1000) * 1000)
 
 					keys += fmt.Sprintf("%v,", "int_created_date_cass")
@@ -291,7 +277,7 @@ func  MakePgQuery(tab string, record map[string]interface{}) (ret string) {
 
 					continue
 				} else {
-					if _,ok:=kk.(int64); ok {
+					if _, ok := kk.(int64); ok {
 						dt := int64((kk.(int64) / 1000) * 1000)
 
 						keys += fmt.Sprintf("%v,", "int_created_date_cass")
@@ -303,32 +289,27 @@ func  MakePgQuery(tab string, record map[string]interface{}) (ret string) {
 				}
 			}
 
-			if vv == "int_updated_date" || vv == "order_date" || vv == "submitted_date" || vv == "int_updated_date" || vv == "order_info_error_date_new" || vv == "order_info_error_date_time" || vv == "order_info_error_date"{
-				if _,ok:=kk.(int); ok {
+			if vv == "int_updated_date" || vv == "order_date" || vv == "submitted_date" || vv == "order_info_error_date_new" || vv == "order_info_error_date_time" || vv == "order_info_error_date" {
+				if _, ok := kk.(int); ok {
 					dt := int64((kk.(int) / 1000) * 1000)
 
 					keys += fmt.Sprintf("%v,", vv)
 					vals += fmt.Sprintf("to_timestamp(%v),", dt)
-
 					continue
 				} else {
-					if _,ok:=kk.(int64); ok {
+					if _, ok := kk.(int64); ok {
 						dt := int64((kk.(int64) / 1000) * 1000)
 
 						keys += fmt.Sprintf("%v,", vv)
 						vals += fmt.Sprintf("to_timestamp(%v),", dt)
-
 						continue
 					}
-
 				}
-
-
 				//continue
 			}
 
+			if _, ok := kk.(int); ok {
 
-			if _,ok:=kk.(int); ok {
 				dt := int64((kk.(int) / 1000) * 1000)
 				keys += fmt.Sprintf("%v,", vv)
 
@@ -341,25 +322,18 @@ func  MakePgQuery(tab string, record map[string]interface{}) (ret string) {
 				}
 			} else {
 
-				if _,ok:=kk.(int64); ok {
+				if _, ok := kk.(int64); ok {
+
 					dt := int64((kk.(int64) / 1000) * 1000)
 					keys += fmt.Sprintf("%v,", vv)
 
 					if dt > 1000000 {
-
 						vals += fmt.Sprintf("to_timestamp(%v),", dt)
 					} else {
-
 						vals += fmt.Sprintf("%v,", dt)
 					}
 				}
-
 			}
-
-
-
-			//keys += vv + ","
-			//vals += fmt.Sprintf("ARRAY[%v]::text,", vv, m[vv])
 
 		default:
 			keys += vv + ","
@@ -375,13 +349,11 @@ func  MakePgQuery(tab string, record map[string]interface{}) (ret string) {
 	return
 }
 
-
 func inWhichArr(str string) (ret string) {
 
-	for kk, vv := range map[string][]string{"arrs" : arrFields, "ints" : intFields, "timestamp" : timeFields} {
+	for kk, vv := range map[string][]string{"arrs": arrFields, "ints": intFields, "timestamp": timeFields} {
 
 		if ret == "" {
-
 			for _, v := range vv {
 
 				if v == str {
@@ -389,7 +361,6 @@ func inWhichArr(str string) (ret string) {
 				}
 			}
 		} else {
-
 			break
 		}
 	}

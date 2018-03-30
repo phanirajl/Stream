@@ -3,9 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/antigloss/go/logger"
 	"github.com/gocql/gocql"
 	"time"
-	"github.com/antigloss/go/logger"
 )
 
 var cassandraSession *gocql.Session
@@ -186,11 +186,9 @@ WHERE local_service_requests_new_con5_pk IN (%v) `, pkRef)
 
 	iter := session.Query(q).Iter()
 	result, err := iter.SliceMap()
-
 	if err != nil {
-
 		logger.Error("ErrorType : QUERY_ERROR, Error fetching details, Error: %v -- Query : %v", err.Error(), q)
-		return nil, errors.New(fmt.Sprintf("QUERY_ERROR, Error fetching details - Error : %v - Query : %v ", err.Error(), q ))
+		return nil, errors.New(fmt.Sprintf("QUERY_ERROR, Error fetching details - Error : %v - Query : %v ", err.Error(), q))
 	}
 
 	return result, nil

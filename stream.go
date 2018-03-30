@@ -3,47 +3,68 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/dminGod/Stream/app_config"
 	"github.com/antigloss/go/logger"
+	"github.com/colinmarc/hdfs"
+	"github.com/dminGod/Stream/app_config"
+	"os"
+	"strconv"
 	"time"
 )
 
 var Conf app_config.AppConfig
 
-
-
 // TODO: - All the os.Exit(1) that is used everywhere is fine for now, but if 2 threads are running on the same binary then that will get messed up?
 // TODO: - !! The applicatoin needs to have a graceful shutdown happen so it can complete whatever its doing and then exit
-// TODO: - !! If a file is written to disk and then not moved to HDFS then it should get moved to HDFS
 
-// TODO: - !! Where is the crack, where are the messages failing -- How are we handling the failing messages?
 // TODO: - !! Write tests for all the main functions
 
-// Done: - You can actually unify the whole thing
+func init() {
+
+	var err error
+	app_config.GetConfiguration()
+	Conf = app_config.GetConfig()
+
+	hdfsStagingFolder = Conf.Kafka.HdfsStagingFolder
+	if hdfsStagingFolder == "" {
+		hdfsStagingFolder = "/tmp"
+	}
+
+	hdfsClient, err = hdfs.NewClient(hdfs.ClientOptions{Addresses: []string{Conf.Kafka.HDFSConnPath}, User: "hdfs"})
+	if err != nil {
+		logger.Error("Could not connect to HDFS, Config: %v, Error: %v", Conf.Kafka.HDFSConnPath, err)
+		os.Exit(1)
+	}
+
+	myPid = strconv.Itoa(os.Getpid())
+	uq := uniquePidsInTmp(hdfsStagingFolder)
+	curpids := currentPids(`stream`)
+	finalPids := RemoveCurFromUniq(uq, curpids, myPid)
+	appStartedTime = time.Now()
+
+	moveOldFiles(finalPids)
+}
 
 func main() {
 
 	fmt.Println("Starting application..")
 
 	// Set the configuration object
-	app_config.GetConfiguration()
-	Conf = app_config.GetConfig()
 
 	logFolder := Conf.Stream.StreamLogFolder
 
 	if len(logFolder) == 0 {
-
 		logFolder = "/var/log/"
 	}
 
+	// Start the logging
 	err := logger.Init(Conf.Stream.StreamLogFolder, // specify the directory to save the logfiles
-		800, // maximum logfiles allowed under the specified log directory
-		20,  // number of logfiles to delete when number of logfiles exceeds the configured limit
-		50,     // maximum size of a logfile in MB
+		800,   // maximum logfiles allowed under the specified log directory
+		20,    // number of logfiles to delete when number of logfiles exceeds the configured limit
+		50,    // maximum size of a logfile in MB
 		false, // whether logs with Trace level are written down
 	)
 	if err != nil {
-		fmt.Println("Error in intializing logger, is : ", err)
+		fmt.Println("Couldn't initialize logger, Error : ", err)
 	}
 
 	var postMode bool
@@ -55,7 +76,7 @@ func main() {
 	flag.BoolVar(&postMode, "post_push", false, `--post_push Will start the binary in a postgres push mode`)
 	flag.Parse()
 
-	if postMode == true{
+	if postMode == true {
 
 		logger.SetFilenamePrefix("post.%P.%U", "post.%P.%U")
 		logger.Info("Starting postgres push from stream")

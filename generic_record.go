@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/linkedin/goavro"
-	"time"
-	"regexp"
+	"errors"
 	"fmt"
 	"github.com/antigloss/go/logger"
+	"github.com/linkedin/goavro"
+	"regexp"
 	"strconv"
-	"errors"
+	"time"
 )
 
 func returnGenericString(s string) interface{} {
@@ -46,7 +46,6 @@ func returnGenericStringInt(s int64) (r interface{}) {
 	return nil
 }
 
-
 func returnGenericTimeString(s int64) interface{} {
 
 	if s > 100000 {
@@ -60,7 +59,7 @@ func returnGenericTimeString(s int64) interface{} {
 	return nil
 }
 
-func returnGenericTimeDiff( tm time.Time, tms int64 ) interface{} {
+func returnGenericTimeDiff(tm time.Time, tms int64) interface{} {
 
 	tmss := strconv.Itoa(int(tms))
 
