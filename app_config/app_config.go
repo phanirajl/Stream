@@ -47,36 +47,37 @@ type postgresxl struct {
 
 type kafka struct {
 
-	// Used for push
-	EnableKafkaPush       bool 	// remove
+// Used for push
+//	EnableKafkaPush       bool 	// remove
 	KafkaBrokers          []string
-	KafkaBrokersCassandra []string	// remove
+//	KafkaBrokersCassandra []string	// remove
 
 	// List of topics to handle from this node..
-	TopicsListForThisNode string	// remove -- make this an array of string
-	HivePushTopic         string	// remove
+//	TopicsListForThisNode string	// remove -- make this an array of string
+	TopicsListForThisNode []string	// remove -- make this an array of string
+	//	HivePushTopic         string	// remove
 
-	AvroSchemaFile           string		// remove
+//	AvroSchemaFile           string		// remove
 	MessageSendRetryAttempts int
 	FlushFrequencyMilliSec   int 		// Use this?
 
 	// Enable background worker
-	EnableKafkaBackgroundWorkerMode bool		// remove
+//	EnableKafkaBackgroundWorkerMode bool		// remove
 	HDFSConnPath                    string
 	HdfsStagingFolder               string
 	RecordsPerAvroFile              int
-	HdfsDatabaseFolder              string		// remove
+//	HdfsDatabaseFolder              string		// remove
 	AvroArchivesFolder              string		// ??
 	DisableSnappyCompression        bool		// ??
-	MessagesInParallel              int			// remove
+//	MessagesInParallel              int			// remove
 
-	// Make zip files or not
-	EnableMovedFilesArchive bool				// remove
+// Make zip files or not
+//	EnableMovedFilesArchive bool				// remove
 
-	FileMovementIntervalSec      int		// remove
-	ArchiveMovedFilesIntervalSec int		// remove
+//	FileMovementIntervalSec      int		// remove
+//	ArchiveMovedFilesIntervalSec int		// remove
 
-	SchemaFile string						// remove
+//	SchemaFile string						// remove
 }
 
 //AppConfig stores all the information regarding servers, database, applications
@@ -123,7 +124,6 @@ func GetConfiguration() {
 		for _, e := range err {
 			fmt.Println(e.Error())
 		}
-
 		os.Exit(1)
 	}
 
@@ -137,17 +137,14 @@ func GetConfiguration() {
 	e2 := viConfig.Unmarshal(&Config)
 
 	if e2 != nil {
-
 		fmt.Print("Error marshaling config ", e2)
 	}
 
 	if verr != nil {
-
 		fmt.Println("There was an error reading in configuration. Error : ", verr.Error())
 	}
 
 	configLoaded = true
-
 }
 
 //GetConfig returns Config that holds the configuration from the toml file
