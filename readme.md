@@ -9,7 +9,9 @@ The application mainly uses :
     - Fetch the relevant data from cassandra
     - Batch data into compressed Avro files
     - Push these files to HDFS 
-    
+
+![alt text](https://raw.githubusercontent.com/dminGod/Stream/PushHDFS/z_dev_reference/references/stream.jpg "Architecture Overview")
+
     
 Flow of data:
 1) A trigger is created on Cassandra -- this trigger inserts the primary key of the record being inserted into a Kafka topic.
