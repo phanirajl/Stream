@@ -15,7 +15,7 @@ var cassandraHost []string
 var cassandraUID string
 var cassandraPass string
 
-// TODO: This method has to return an error and it should be checked and handled where its called [done]
+
 func LoadPool() (err error) {
 
 	cassandraHost = Conf.Cassandra.Host
@@ -26,7 +26,6 @@ func LoadPool() (err error) {
 
 	cluster := gocql.NewCluster(cassandraHost...)
 
-	// TODO: Database name for casssandra has to come from config -- will need to add an extra field for it [done]
 	//cluster.Keyspace = "alltrade_test"
 	cluster.Keyspace = Conf.Cassandra.KeySpace
 	cluster.ProtoVersion = 3
@@ -44,7 +43,7 @@ func LoadPool() (err error) {
 	cassandraSession, err = cluster.CreateSession()
 
 	if err != nil {
-		// TODO: Return a proper error [done]
+
 		logger.Error("ErrorType : INFRA_ERROR - Cassandra Connection could not be established, please check! %v", err)
 		cassandraSessionError = err
 	} else {
@@ -56,7 +55,6 @@ func LoadPool() (err error) {
 func GetSession() (retSession *gocql.Session, err error) {
 
 	if cassandraSession == nil {
-		// TODO: From LoadPool, send the actual error out, bubble that error out and use that [done]
 		LoadPool()
 	}
 
@@ -70,6 +68,7 @@ func GetSession() (retSession *gocql.Session, err error) {
 	return
 }
 
+// Todo: The query will come dynamically
 func Select(pkRef string) ([]map[string]interface{}, error) {
 
 	// Check if the array is not blank

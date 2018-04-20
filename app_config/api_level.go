@@ -1,12 +1,21 @@
 package app_config
 
-
 /*
 	open the file -- get its contents -- close it -- run checks on it -- if checks come out good --
 	run a populate on it and add it to the main struct
 	put the contents in the struct
-
  */
+
+ /*
+ 	Actions that this module does:
+		- Make sure the object
+ 		- Make sure the object array does not have duplicates (what is the pk to check by?)
+ 		- Make sure the folder for the config exists (exit if fail)
+ 		- Make sure all the toml files mentioned actually exits (exit if fail)
+ 		- Open each file, check if the file is valid and the things you need for it exist
+ 		- Populate the toml contents into a struct
+  */
+
 
 type TablesRef []Table
 
@@ -47,6 +56,19 @@ func BasicChecks() (err error){
 	return
 }
 
+
+
+func noDuplicatesCheck()(ret bool) {
+
+	return
+}
+
+func folderExistsCheck() (ret bool){
+
+	return
+}
+
+
 /*
 	Given the toml contents -- run checks on and return errors if any
 
@@ -55,7 +77,6 @@ func validateToml(confs map[string]string)(err error) {
 
 	return
 }
-
 
 /*
 	Given the toml contents parse and populate the final struct that will be used by the application

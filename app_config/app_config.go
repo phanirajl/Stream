@@ -10,6 +10,13 @@ import (
 )
 
 // TODO : Some of the configuration items are from older structs from D50 code that was written -- Need to remove the useless ones
+
+// The application will have :
+// api_config_folder
+// config_files to load
+
+
+
 type appConfiguration struct {
 
 	// How to fetch the pgxc_ctl file?
@@ -66,6 +73,10 @@ type kafka struct {
 	HDFSConnPath                    string
 	HdfsStagingFolder               string
 	RecordsPerAvroFile              int
+
+	ApiConfigFolder					string
+	ApiFilesToLoad					[]string
+
 //	HdfsDatabaseFolder              string		// remove
 	AvroArchivesFolder              string		// ??
 	DisableSnappyCompression        bool		// ??
@@ -154,8 +165,8 @@ func GetConfig() AppConfig {
 
 		GetConfiguration()
 	}
-	return Config
 
+	return Config
 }
 
 /*

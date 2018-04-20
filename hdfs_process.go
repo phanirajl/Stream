@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"github.com/Shopify/sarama"
@@ -9,14 +8,10 @@ import (
 	"github.com/bsm/sarama-cluster"
 	"github.com/colinmarc/hdfs"
 	"github.com/gocql/gocql"
-	"github.com/golang/snappy"
 	"github.com/linkedin/goavro"
-	"github.com/mitchellh/mapstructure"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"os/signal"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -32,12 +27,12 @@ var appStartedTime time.Time
 
 type AllTableState map[string]*TableState
 
-func (a *AllTableState) GetTS(table string)(ts TableState){
+func (a *AllTableState) GetTS(table string)(ts TableState) {
 
 	for k, v := range *a {
 
 		if k == table {
-			ts = v
+			ts = *v
 		}
 	}
 
@@ -49,6 +44,7 @@ type TableState struct {
 	TableSchemaName string
 	AvroSchema string
 	Query string
+
 	CurFile *os.File
 	Ow goavro.OCFWriter
 }
