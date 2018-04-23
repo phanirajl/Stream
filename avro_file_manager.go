@@ -13,22 +13,30 @@ import (
 	"github.com/linkedin/goavro"
 	"github.com/gocql/gocql"
 	"strconv"
+	"path"
+	"errors"
 )
 
-func moveOldFiles(pids []string) {
+func MoveOldFiles(pids []string) (MovedList []string, err error) {
 
-	files, err := ioutil.ReadDir(fmt.Sprintf("/%v/", hdfsStagingFolder))
+	files, err := ioutil.ReadDir(fmt.Sprintf("%v/", Conf.Kafka.HdfsStagingFolder))
 	if err != nil {
 		logger.Error("Error reading hdfs dir for initial moving files", err)
 		return
 	}
 
 	for _, file := range files {
-
 		if shouldIMoveFile(file, pids, appStartedTime) {
-			moveFileToHDFS(file)
+
+			moved, err := moveFileToHDFS(file)
+
+			if err != nil && moved {
+				MovedList = append(MovedList, file.Name())
+			}
 		}
 	}
+
+	return
 }
 
 // File should be in the PID list and the last modified time of this file should be after
@@ -44,7 +52,7 @@ func shouldIMoveFile(file os.FileInfo, pids []string, appSt time.Time) (ret bool
 
 			// Modification of this file should be
 			// before the current application started
-			if file.ModTime().Before(appStartedTime) {
+			if file.ModTime().Before(appSt) {
 				ret = true
 			}
 		}
@@ -99,11 +107,11 @@ func RemoveCurFromUniq(allPids []string, currPids []string, myPid string) (retPi
 }
 
 
-func uniquePidsInTmp(f string) (pids []string) {
+func UniquePidsInTmp(f string) (pids []string) {
 
-	fs, err := ioutil.ReadDir(hdfsStagingFolder)
+	fs, err := ioutil.ReadDir(f)
 	if err != nil {
-		logger.Error("Error in fetching dir contents from hdfsStagingFolder : '%v' -- Error : %v", hdfsStagingFolder, err)
+		logger.Error("Error in fetching dir contents from hdfsStagingFolder : '%v' -- Error : %v", f, err)
 		return
 	}
 
@@ -159,14 +167,30 @@ func currentPids(app string) (pids []string) {
 	return
 }
 
-func moveFileToHDFS(f os.FileInfo) (res bool) {
+func moveFileToHDFS(f os.FileInfo) (res bool, err error) {
 
 	removeFolder := "/" + hdfsStagingFolder + "/"
 
-	fn := removeFolder + f.Name()
+	//fn := removeFolder + f.Name()
+	fn := path.Join(Conf.Kafka.HdfsStagingFolder, f.Name())
 	rfn := strings.Replace(fn, removeFolder, "", 1)
 
-	err := hdfsClient.CopyToRemote(fn, Conf.Kafka.HdfsDatabaseFolder+"/"+rfn)
+	if hdfsClient == nil {
+
+		logger.Warn("Unable to connect to HDFS, trying again")
+		fmt.Println("Trying to connect to HDFS again")
+		hdfsClient, err = getHdfsClient()
+
+		if err != nil || hdfsClient == nil {
+			logger.Error("Error moving file to HDFS -- Not Connected")
+			err = errors.New("Error moving file to HDFS -- Not Connected")
+			res = false
+			return
+		}
+	}
+
+	// REMOVE Change this!
+	err = hdfsClient.CopyToRemote(fn, ""+"/"+rfn)
 	if err != nil {
 
 		e := err.Error()
@@ -199,7 +223,8 @@ func rotateFileLoop(s *time.Time, f **os.File, ow **goavro.OCFWriter, i *int) {
 	rfn := strings.Replace(fn, "/tmp/", "", 1)
 	(*f).Close()
 
-	err := hdfsClient.CopyToRemote(fn, Conf.Kafka.HdfsDatabaseFolder+"/"+rfn)
+	// REMOVE Change this!
+	err := hdfsClient.CopyToRemote(fn, ""+"/"+rfn)
 	if err != nil {
 		logger.Error("Error moving file to HDFS, %v", err)
 		os.Exit(1)

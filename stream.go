@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"errors"
 )
 
 var Conf app_config.AppConfig
@@ -20,7 +21,7 @@ var Conf app_config.AppConfig
 
 func init() {
 
-	var err error
+
 	app_config.GetConfiguration()
 	Conf = app_config.GetConfig()
 
@@ -29,19 +30,8 @@ func init() {
 		hdfsStagingFolder = "/tmp"
 	}
 
-	hdfsClient, err = hdfs.NewClient(hdfs.ClientOptions{Addresses: []string{Conf.Kafka.HDFSConnPath}, User: "hdfs"})
-	if err != nil {
-		logger.Error("Could not connect to HDFS, Config: %v, Error: %v", Conf.Kafka.HDFSConnPath, err)
-		os.Exit(1)
-	}
 
-	myPid = strconv.Itoa(os.Getpid())
-	uq := uniquePidsInTmp(hdfsStagingFolder)
-	curpids := currentPids(`stream`)
-	finalPids := RemoveCurFromUniq(uq, curpids, myPid)
-	appStartedTime = time.Now()
-
-	moveOldFiles(finalPids)
+	return
 }
 
 func main() {
@@ -51,6 +41,8 @@ func main() {
 	// Set the configuration object
 
 	logFolder := Conf.Stream.StreamLogFolder
+
+	fmt.Println("Logfolder is : " , logFolder)
 
 	if len(logFolder) == 0 {
 		logFolder = "/var/log/"
@@ -68,6 +60,39 @@ func main() {
 	}
 
 	var postMode bool
+
+	hdfsClient, err = getHdfsClient()
+
+	myPid = strconv.Itoa(os.Getpid())
+	uq := UniquePidsInTmp(hdfsStagingFolder)
+	curpids := currentPids(`stream`)
+	finalPids := RemoveCurFromUniq(uq, curpids, myPid)
+	appStartedTime = time.Now()
+
+
+	_, err = MoveOldFiles(finalPids)
+	if err != nil {
+		logger.Error("HDFS not connected -- exiting")
+		fmt.Println("HDFS not connected -- exiting")
+		os.Exit(1)
+	}
+
+
+	errKafkaConf := app_config.CheckLoadData()
+	if len(errKafkaConf) > 0 {
+
+		logger.Error("There were errors in loading the API level config details")
+
+		for _, e := range errKafkaConf {
+			logger.Error(e.Error())
+		}
+
+		fmt.Println("Errors in loading the API config : ", err)
+		os.Exit(2)
+	}
+
+	logger.Info("Loaded %v API details -- Details : %v", len(app_config.TablesConf), app_config.TablesConf)
+
 
 	//Get the flag for hdfs_push mode
 	var pushMode bool
@@ -93,11 +118,25 @@ func main() {
 		if cassErr != nil {
 			logger.Error(fmt.Sprintf("There was an error in loading Cassandra: %v", cassErr))
 		}
-		err := KafkaListener()
-		if err != nil {
-			logger.Error(fmt.Sprintf("There was an error running the listener: %v", err))
-		}
+		//err := KafkaListener()
+		//if err != nil {
+		//	logger.Error(fmt.Sprintf("There was an error running the listener: %v", err))
+		//}
 	}
 
 	logger.Info("Exiting application")
+}
+
+
+func getHdfsClient()(hd *hdfs.Client, err error){
+
+	hd, err = hdfs.NewClient(hdfs.ClientOptions{Addresses: []string{Conf.Kafka.HDFSConnPath}, User: "hdfs"})
+	if err != nil {
+		logger.Error("Could not connect to HDFS, Config: %v, Error: %v", Conf.Kafka.HDFSConnPath, err)
+		err = errors.New(fmt.Sprintf("Could not connect to HDFS, Config: %v, Error: %v", Conf.Kafka.HDFSConnPath, err))
+		hd = nil
+		// os.Exit(1)
+	}
+
+	return
 }

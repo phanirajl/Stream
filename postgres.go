@@ -24,7 +24,9 @@ var dbpool []*sql.DB
 func PostgresPush() {
 
 	bl := Conf.Kafka.KafkaBrokers
-	topicName := Conf.Kafka.TopicsListForThisNode
+
+	// REMOVE Change this!!
+	topicName := ""
 
 	config := cluster.NewConfig()
 	config.Consumer.Return.Errors = true

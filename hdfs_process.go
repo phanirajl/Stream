@@ -56,7 +56,7 @@ func KafkaListener() (err error) {
 	bl := Conf.Kafka.KafkaBrokers
 
 	// TODO: This will come from the listOfNodes pulled from the config file
-	topicName := Conf.Kafka.TopicsListForThisNode
+	// topicName := Conf.Kafka.TopicsListForThisNode
 	recordsPerAvroFile := Conf.Kafka.RecordsPerAvroFile
 
 	config := cluster.NewConfig()
@@ -114,11 +114,16 @@ func KafkaListener() (err error) {
 
 
 	// TODO: the schemafile will come dynamically
-	schemaFile := Conf.Kafka.SchemaFile
+	schemaFile := "" //Conf.Kafka.SchemaFile
 	b, err := ioutil.ReadFile(fmt.Sprintf("%v", schemaFile))
 	if err != nil {
 		logger.Error("There was an error in opening the schema file Error : %v", err)
 	}
+
+	// Remove!!!
+	pushTopic := ""
+	topicName := ""
+	// Remove!!!
 
 	codec, err = goavro.NewCodec(fmt.Sprintf(string(b), pushTopic))
 
@@ -213,7 +218,7 @@ func KafkaListener() (err error) {
 	fmt.Println("Starting time now : ", s)
 
 	// TODO : The tick has to come from the configuration
-	tick := time.NewTicker(time.Millisecond * )
+	tick := time.NewTicker(time.Millisecond * 5)
 
 ConsumerLoop:
 	for {

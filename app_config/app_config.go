@@ -15,8 +15,6 @@ import (
 // api_config_folder
 // config_files to load
 
-
-
 type appConfiguration struct {
 
 	// How to fetch the pgxc_ctl file?
@@ -61,7 +59,7 @@ type kafka struct {
 
 	// List of topics to handle from this node..
 //	TopicsListForThisNode string	// remove -- make this an array of string
-	TopicsListForThisNode []string	// remove -- make this an array of string
+	// TopicsListForThisNode []string	// remove -- make this an array of string
 	//	HivePushTopic         string	// remove
 
 //	AvroSchemaFile           string		// remove
@@ -122,6 +120,7 @@ var Config AppConfig
 func init() {
 
 	GetConfiguration()
+
 }
 
 //GetConfiguration gets the configuration details from the .toml file

@@ -5,11 +5,19 @@
     - Parse and populate the files into an []Structs with details
     
 Todo:
-- This file only has comments and empty functions does not have actual code 
-    
+    - This file only has comments and empty functions does not have actual code
+    - What is the structure you want to keep when you get config from the main config file
+    - Tests you want to run on the actual file file
+    - What should exist per API level? 
+        
 
 #####app_config/app_config.go
 - Load the initial configuration file for the application and populate the settings.
+
+ToDo:
+- There should be a folder reference to where the files are kept
+- There should be an array configuration of what files should be loaded for the api level.
+
 
 #####cassandra_client.go
 This file is responsible for connecting to the target cassandra application and 
