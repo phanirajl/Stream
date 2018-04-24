@@ -1,106 +1,182 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"github.com/antigloss/go/logger"
 	"github.com/colinmarc/hdfs"
 	"github.com/dminGod/Stream/app_config"
 	"os"
 	"strconv"
-	"time"
 	"errors"
+	"strings"
+	"github.com/dminGod/Stream/avro_file_manager"
+	"github.com/dminGod/Stream/models"
 )
 
 var Conf app_config.AppConfig
+var Apis models.APIsRef
 
-// TODO: - All the os.Exit(1) that is used everywhere is fine for now, but if 2 threads are running on the same binary then that will get messed up?
 // TODO: - !! The applicatoin needs to have a graceful shutdown happen so it can complete whatever its doing and then exit
-
 // TODO: - !! Write tests for all the main functions
+
+// TODO: The File name should have the topic name in it -- only then will you be able to figure out what table the file belongs to when you see orphans
+// TODO: There needs to be a common place to be able to get the API related stuff -- we should do it like the config module -- You will need to do lookups on the topic name from old orphans
+
 
 func init() {
 
-
 	app_config.GetConfiguration()
 	Conf = app_config.GetConfig()
-
-	hdfsStagingFolder = Conf.Kafka.HdfsStagingFolder
-	if hdfsStagingFolder == "" {
-		hdfsStagingFolder = "/tmp"
-	}
-
 
 	return
 }
 
 func main() {
 
+	InitializeApp()
+
+	var err error
+
+	// Connect to HDFS
+	err = testHdfsClient()
+	if err != nil {
+		initError([]error{err})
+	}
+
+	logger.Info(fmt.Sprintf("Loading cassandra pool"))
+	err = LoadPool()
+	if err != nil {
+		initError([]error{err})
+	}
+
+	err = avro_file_manager.InitialMoveFiles()
+	if err != nil {
+		initError([]error{err})
+	}
+
+	pid := strconv.Itoa( os.Getpid() )
+	Apis.MakeFirstFiles( Conf.Kafka.HdfsStagingFolder, pid )
+
+	// Start the actual listening
+	err = KafkaListener()
+	if err != nil {
+		initError([]error{ err })
+	}
+
+	logger.Info("Exiting application")
+}
+
+func InitializeApp(){
+
 	fmt.Println("Starting application..")
+	fmt.Println("Logfolder is : " , Conf.Stream.StreamLogFolder)
+	fmt.Println("Configuration is : " , Conf)
 
-	// Set the configuration object
+	var errs []error
 
-	logFolder := Conf.Stream.StreamLogFolder
-
-	fmt.Println("Logfolder is : " , logFolder)
-
-	if len(logFolder) == 0 {
-		logFolder = "/var/log/"
+	if len(Conf.Stream.StreamLogFolder) == 0 {
+		Conf.Stream.StreamLogFolder = "/var/log/"
 	}
 
 	// Start the logging
-	err := logger.Init(Conf.Stream.StreamLogFolder, // specify the directory to save the logfiles
-		800,   // maximum logfiles allowed under the specified log directory
-		20,    // number of logfiles to delete when number of logfiles exceeds the configured limit
-		50,    // maximum size of a logfile in MB
-		false, // whether logs with Trace level are written down
-	)
+	err := logger.Init( Conf.Stream.StreamLogFolder,	800, 20, 50,	false )
 	if err != nil {
 		fmt.Println("Couldn't initialize logger, Error : ", err)
 	}
-
-	var postMode bool
-
-	hdfsClient, err = getHdfsClient()
-
-	myPid = strconv.Itoa(os.Getpid())
-	uq := UniquePidsInTmp(hdfsStagingFolder)
-	curpids := currentPids(`stream`)
-	finalPids := RemoveCurFromUniq(uq, curpids, myPid)
-	appStartedTime = time.Now()
+	logger.SetFilenamePrefix("stream.%P.%U", "stream.%P.%U")
 
 
-	_, err = MoveOldFiles(finalPids)
-	if err != nil {
-		logger.Error("HDFS not connected -- exiting")
-		fmt.Println("HDFS not connected -- exiting")
-		os.Exit(1)
+	logger.Info("Setting default config values")
+	errs = setDefaultVals()
+	if len(errs) > 0 {
+		initError(errs)
 	}
 
+	logger.Info("Loading API level configuration")
+	errs = app_config.CheckLoadAPIs()
+	if len(errs) > 0 {
+		initError(errs)
+	}
 
-	errKafkaConf := app_config.CheckLoadData()
-	if len(errKafkaConf) > 0 {
+	Apis = app_config.GetApis()
 
-		logger.Error("There were errors in loading the API level config details")
+	// Populate the AvroSchema and Codec
+	// File and OW need to be still populated
+	errs = Apis.InitialPopulate()
+	if len(errs) > 0 {
+		initError(errs)
+	}
+}
 
-		for _, e := range errKafkaConf {
-			logger.Error(e.Error())
+func setDefaultVals()(err []error) {
+
+	Conf.Kafka.HdfsStagingFolder = strings.TrimRight(hdfsStagingFolder, "/")
+
+	if Conf.Kafka.HdfsStagingFolder == "" {
+		Conf.Kafka.HdfsStagingFolder = "/tmp"
+	}
+
+	// By default if the frequency is not set
+	//  make it 20 seconds
+	if Conf.Kafka.FlushFrequencyMilliSec == 0 || Conf.Kafka.FlushFrequencyMilliSec <= 500 {
+
+		Conf.Kafka.FlushFrequencyMilliSec = 20000
+
+		// Why are you flushing files so often?
+		if Conf.Kafka.FlushFrequencyMilliSec <= 500 {
+
+			logger.Warn("Flush frequency set to less than 500ms, will not allow less than 1 second -- set frequency to default")
 		}
-
-		fmt.Println("Errors in loading the API config : ", err)
-		os.Exit(2)
 	}
 
-	logger.Info("Loaded %v API details -- Details : %v", len(app_config.TablesConf), app_config.TablesConf)
+	if Conf.Kafka.RecordsPerAvroFile == 0 {
+		Conf.Kafka.RecordsPerAvroFile = 50
+	}
+
+	if len(Conf.Kafka.KafkaBrokers) == 0 {
+
+		err = append(err, errors.New(fmt.Sprintf("No kafka brokers listed in config -- Entry : '%v' ", Conf.Kafka.KafkaBrokers)))
+	}
+
+	if len(Conf.Kafka.ApiConfigFolder) == 0 {
+
+		err = append(err, errors.New(fmt.Sprintf("API Config folder is blank -- Entry : '%v' ", Conf.Kafka.ApiConfigFolder)))
+	}
+
+	if len(Conf.Kafka.ApiFilesToLoad) == 0 {
+
+		err = append(err, errors.New(fmt.Sprintf("No API files to load configured 'ApiFilesToLoad' -- Entry : '%v' ", Conf.Kafka.ApiFilesToLoad)))
+	}
+
+	return
+}
+
+func initError(errs []error){
+
+	for _, v := range errs {
+		fmt.Println("Initialization error : ", v.Error())
+		logger.Error("Error in setting initial vals : '%v'", v.Error())
+	}
+	os.Exit(1)
+}
 
 
-	//Get the flag for hdfs_push mode
-	var pushMode bool
-	flag.BoolVar(&pushMode, "hdfs_push", false, `--hdfs_push Will start the binary in a push mode`)
+func testHdfsClient()( err error ) {
 
-	flag.BoolVar(&postMode, "post_push", false, `--post_push Will start the binary in a postgres push mode`)
-	flag.Parse()
+	hd, err := hdfs.NewClient(hdfs.ClientOptions{Addresses: []string{Conf.Kafka.HDFSConnPath}, User: "hdfs"})
+	if err != nil {
+		err = errors.New(fmt.Sprintf("Could not connect to HDFS, Config: %v, Error: %v", Conf.Kafka.HDFSConnPath, err))
+		hd = nil
+		return
+	} else {
+		hd.Close()
+	}
 
+	return
+}
+
+/*
+Postgres connection logic -- if needed later :
 	if postMode == true {
 
 		logger.SetFilenamePrefix("post.%P.%U", "post.%P.%U")
@@ -118,25 +194,8 @@ func main() {
 		if cassErr != nil {
 			logger.Error(fmt.Sprintf("There was an error in loading Cassandra: %v", cassErr))
 		}
-		//err := KafkaListener()
-		//if err != nil {
-		//	logger.Error(fmt.Sprintf("There was an error running the listener: %v", err))
-		//}
-	}
-
-	logger.Info("Exiting application")
-}
 
 
-func getHdfsClient()(hd *hdfs.Client, err error){
+ */
 
-	hd, err = hdfs.NewClient(hdfs.ClientOptions{Addresses: []string{Conf.Kafka.HDFSConnPath}, User: "hdfs"})
-	if err != nil {
-		logger.Error("Could not connect to HDFS, Config: %v, Error: %v", Conf.Kafka.HDFSConnPath, err)
-		err = errors.New(fmt.Sprintf("Could not connect to HDFS, Config: %v, Error: %v", Conf.Kafka.HDFSConnPath, err))
-		hd = nil
-		// os.Exit(1)
-	}
 
-	return
-}

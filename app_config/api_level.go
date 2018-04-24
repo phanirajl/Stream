@@ -6,63 +6,14 @@ import (
 	"fmt"
 	"errors"
 	"github.com/spf13/viper"
+	"github.com/dminGod/Stream/models"
 )
 
-/*
-	open the file -- get its contents -- close it -- run checks on it -- if checks come out good --
-	run a populate on it and add it to the main struct
-	put the contents in the struct
- */
+var Apis models.APIsRef
 
- /*
- 	Actions that this module does:
- 		- Make sure the object array does not have duplicates (what is the pk to check by?)
- 		- Make sure the folder for the config exists (exit if fail)
- 		- Make sure all the toml files mentioned actually exits (exit if fail)
- 		- Open each file, check if the file is valid and the things you need for it exist
- 		- Populate the toml contents into a struct
-  */
+func CheckLoadAPIs() ( errs []error ) {
 
-
-type TablesRef []Table
-
-/*
-type TableState struct {
-		TableSchemaName string  -- What is this?
-		TopicName string		-- What topic should be listened to for this API -- most important
-		AvroSchemaFile string	-- What is the full location to get the Avro schema -- only used once at start
-		AvroSchema string		-- The actual schema string that is used
-		Query string			-- The query string used to pull data from Cassandra
-
-		CurFile *os.File		-- Current file passed to the ocfw to write stuff
-		Ow goavro.OCFWriter		-- The ocfw object
-	}
- */
-
-type Table struct {
-
-	TableSchemaName string
-	TopicName string
-	AvroSchemaFile string
-	AvroSchema string
-	Query string
-}
-
-var TablesConf TablesRef
-
-/*
-Does these checks:
-	- Has this guy put in duplicate values in this array, if yes, then it's not good cause you'll have multiple objects
-	- Do we have references for the fields to reach the toml files in the main config file?
-		- If not, exit -- we wont be able to do anything with the applicatoin without this configuration
-	- Does the directory mentioned for the reference exist?
-	- Do all the files that are mentioned in the config file exist?
-
-	- Open each file take contents of the file -- send it to a checker -- if all looks good then put the
-		contents into the struct
-
- */
-func CheckLoadData() (err []error){
+	var e error
 
 	folder := Config.Kafka.ApiConfigFolder
 	files := Config.Kafka.ApiFilesToLoad
@@ -70,35 +21,44 @@ func CheckLoadData() (err []error){
 	// Make sure we don't have duplicates in the array .. if yes throw an error
 	dupCheck := noDuplicatesCheck(files)
 	if dupCheck {
-		err = append(err, errors.New("There were duplicate files found in Kafka.ApiFilesToLoad -- Please check."))
+		errs = append(errs, errors.New("There were duplicate files found in Kafka.ApiFilesToLoad -- Please check."))
 	}
 
 	// Make sure the folder mentioned for the reference exists
 	// ApiConfigFolder
 	// Make sure each file mentioned in the reference exists
 	if folderExistsCheck(folder) == false {
-
-		err = append(err, errors.New(fmt.Sprintf("The API configuration folder '%v' could not be located -- Please check.", folder)))
+		errs = append(errs, errors.New(fmt.Sprintf("The API configuration folder '%v' could not be located -- Please check.", folder)))
 	}
 
 	// If files dont exist throw an error
 	for _, e := range filesExistCheck(folder, files) {
-		err = append(err, e)
+		errs = append(errs, e)
 	}
 
-	if len(err) > 0 {
+	if len(errs) > 0 {
 		return
 	}
 
-	err = append(err, LoadData())
+	Apis, e = LoadData()
+	if e != nil {
+		errs = append(errs, e)
+	}
 
 	return
 }
 
-func LoadData() (err error) {
+func GetApis()(a models.APIsRef) {
+
+	return Apis
+}
+
+func LoadData() (a models.APIsRef, err error) {
 
 	folder := Config.Kafka.ApiConfigFolder
 	files := Config.Kafka.ApiFilesToLoad
+
+	a = make(map[string]*models.APIDetails)
 
 	// For each file:
 
@@ -111,12 +71,66 @@ func LoadData() (err error) {
 		conf, e := validateLoadToml(folder, f)
 		if(e != nil) {
 			err = e
-			return
+			break
 		}
 
-		TablesConf = append(TablesConf, conf)
+		e = checkApi(f, conf)
+		if e != nil {
+			err = e
+			break
+		}
+
+		a[conf.KafkaTopic] = &conf
 	}
 
+	return
+}
+
+
+func checkApi(f string, c models.APIDetails) (err error) {
+
+	multi := len(c.QueryFile) == 0 || len(c.AvroSchemaFile) == 0 || len(c.KafkaTopic) == 0 || len(c.HiveTableName) == 0 || len(c.HDFSLocation) == 0
+
+	if multi {
+
+		err = errors.New(fmt.Sprintf("Some parameters missing from API file : '%v' -- QueryFile: '%v' - AvroSchemaFile: '%v' - KafkaTopic: '%v' - HiveTableName: '%v' - HDFSLocation: '%v'",
+			f, c.QueryFile, c.AvroSchemaFile, c.KafkaTopic, c.HiveTableName, c.HDFSLocation))
+		return
+	}
+
+	_, err = os.Stat(c.QueryFile)
+	if err != nil {
+		err = errors.New(fmt.Sprintf("Unable to locate the QueryFile : '%v'", c.QueryFile))
+		return
+	}
+
+	_, err = os.Stat(c.AvroSchemaFile)
+	if err != nil {
+		err = errors.New(fmt.Sprintf("Unable to locate the AvroSchemaFile : '%v'", c.AvroSchemaFile))
+		return
+	}
+
+	return
+}
+
+
+
+/*
+	Given the toml contents -- run checks on and return errors if any
+
+ */
+func validateLoadToml(folder string, file string)(c models.APIDetails, err error) {
+
+	v := viper.New()
+	v.SetConfigName(file)
+	viper.AddConfigPath(folder)
+	v.SetConfigType("toml")
+	err = v.ReadInConfig()
+	if err != nil {
+		return
+	}
+
+	err = v.Unmarshal(&c)
 	return
 }
 
@@ -166,24 +180,7 @@ func filesExistCheck(folder string, files []string) (err []error) {
 	return
 }
 
-/*
-	Given the toml contents -- run checks on and return errors if any
 
- */
-func validateLoadToml(folder string, file string)(c Table, err error) {
-
-	v := viper.New()
-	v.SetConfigName(file)
-	viper.AddConfigPath(folder)
-	v.SetConfigType("toml")
-	err = v.ReadInConfig()
-	if err != nil {
-		return
-	}
-
-	v.Unmarshal(&c)
-	return
-}
 
 
 func populateToml(confs map[string]string)(err error) {

@@ -45,6 +45,8 @@ Is the main file that has the listener loop for kafka where :
 - Each message is processed.
 - Appended to the correct avro file
 - Pushed to HDFS
+- KafkaListener(): 
+    - Kafkabrokers
 
 #####local_file_manager.go
 - File management for local and to push files to HDFS

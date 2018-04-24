@@ -1,4 +1,4 @@
-package main
+package avro_file_manager
 
 import (
 	"fmt"
@@ -15,7 +15,33 @@ import (
 	"strconv"
 	"path"
 	"errors"
+	"github.com/dminGod/Stream/app_config"
+	"github.com/colinmarc/hdfs"
+	"github.com/dminGod/Stream/models"
 )
+
+var Conf app_config.AppConfig
+var StartTime time.Time
+var Apis models.APIsRef
+
+func init(){
+
+	Conf = app_config.GetConfig()
+	StartTime = time.Now()
+	Apis = app_config.GetApis()
+}
+
+func getHdfsClient()( hd *hdfs.Client, err error ) {
+
+	hd, err = hdfs.NewClient(hdfs.ClientOptions{Addresses: []string{Conf.Kafka.HDFSConnPath}, User: "hdfs"})
+	if err != nil {
+		err = errors.New(fmt.Sprintf("Could not connect to HDFS, Config: %v, Error: %v", Conf.Kafka.HDFSConnPath, err))
+		hd = nil
+		return
+	}
+
+	return
+}
 
 func MoveOldFiles(pids []string) (MovedList []string, err error) {
 
@@ -26,7 +52,7 @@ func MoveOldFiles(pids []string) (MovedList []string, err error) {
 	}
 
 	for _, file := range files {
-		if shouldIMoveFile(file, pids, appStartedTime) {
+		if shouldIMoveFile(file, pids, StartTime) {
 
 			moved, err := moveFileToHDFS(file)
 
@@ -39,12 +65,46 @@ func MoveOldFiles(pids []string) (MovedList []string, err error) {
 	return
 }
 
+func InitialMoveFiles()(err error) {
+
+	// Initial move old files
+	myPid := strconv.Itoa(os.Getpid())
+	uq := UniquePidsInTmp(Conf.Kafka.HdfsStagingFolder)
+	curpids := currentPids(`stream`)
+	finalPids := RemoveCurFromUniq(uq, curpids, myPid)
+	StartTime = time.Now()
+
+	// Where will you move the old files?? :)
+	logger.Info("Attempting to move initial files with PID reference : '%v'", finalPids)
+	mList, err := MoveOldFiles(finalPids)
+	if err != nil {
+		e := fmt.Sprintf("HDFS Error in moving old files")
+		err = errors.New(e)
+	}
+
+	if len(mList) > 0 {
+		logger.Info("Found and moved %v files", len(mList))
+	}
+
+	return
+}
+
 // File should be in the PID list and the last modified time of this file should be after
 // this app has started
 func shouldIMoveFile(file os.FileInfo, pids []string, appSt time.Time) (ret bool) {
 
 	fn := file.Name()
-	pid := getPidFromName(fn)
+	pid, err := getPidFromName( fn )
+	if err != nil {
+		logger.Error("Checking movement of file no PID File : %v -- Error : %v ", fn, err)
+		return false
+	}
+
+	_, err = getTopicFromName( fn )
+	if err != nil {
+		logger.Error("Checking movement of file no File : %v -- Topic : %v", fn, err)
+		return false
+	}
 
 	for _, v := range pids {
 
@@ -61,7 +121,7 @@ func shouldIMoveFile(file os.FileInfo, pids []string, appSt time.Time) (ret bool
 	return
 }
 
-func getPidFromName(fn string) (pid string) {
+func getPidFromName(fn string) (pid string, err error) {
 
 	re := regexp.MustCompile(`^pid(\d+).*`)
 
@@ -72,10 +132,33 @@ func getPidFromName(fn string) (pid string) {
 			cv := mat[0][1]
 			pid = cv
 		}
+	} else {
+
+		err = errors.New(fmt.Sprintf("No PID reference found in file name : '%v'", fn))
 	}
 
 	return
 }
+
+func getTopicFromName(fn string) (topic string, err error) {
+
+	re := regexp.MustCompile(`.*~(.*)~.*`)
+
+	mat := re.FindAllStringSubmatch(fn, -1)
+
+	if len(mat) != 0 {
+		if len(mat[0]) > 1 {
+			cv := mat[0][1]
+			topic = cv
+		}
+	} else {
+
+		err = errors.New(fmt.Sprintf("No Topic reference found in file name : '%v'", fn))
+	}
+
+	return
+}
+
 
 func RemoveCurFromUniq(allPids []string, currPids []string, myPid string) (retPid []string) {
 
@@ -106,7 +189,6 @@ func RemoveCurFromUniq(allPids []string, currPids []string, myPid string) (retPi
 	return
 }
 
-
 func UniquePidsInTmp(f string) (pids []string) {
 
 	fs, err := ioutil.ReadDir(f)
@@ -119,7 +201,11 @@ func UniquePidsInTmp(f string) (pids []string) {
 
 	for _, f := range fs {
 
-		cv := getPidFromName(f.Name())
+		cv, err := getPidFromName( f.Name() )
+		if err != nil {
+			logger.Error("Unable to get PID from name File: '%v' Error: '%v'", f.Name(), err)
+			continue
+		}
 
 		if len(cv) > 0 {
 			tmp[cv] = struct{}{}
@@ -169,11 +255,18 @@ func currentPids(app string) (pids []string) {
 
 func moveFileToHDFS(f os.FileInfo) (res bool, err error) {
 
-	removeFolder := "/" + hdfsStagingFolder + "/"
+	removeFolder := "/" + Conf.Kafka.HdfsStagingFolder + "/"
 
 	//fn := removeFolder + f.Name()
 	fn := path.Join(Conf.Kafka.HdfsStagingFolder, f.Name())
 	rfn := strings.Replace(fn, removeFolder, "", 1)
+
+	topic, err := getTopicFromName( fn )
+
+	a := Apis.GetByTopic(topic)
+	hdfsLocation := a.HDFSLocation
+
+	hdfsClient, err := getHdfsClient()
 
 	if hdfsClient == nil {
 
@@ -189,8 +282,9 @@ func moveFileToHDFS(f os.FileInfo) (res bool, err error) {
 		}
 	}
 
-	// REMOVE Change this!
-	err = hdfsClient.CopyToRemote(fn, ""+"/"+rfn)
+	rPath := path.Join(hdfsLocation, rfn)
+	logger.Info("Moving initial file to remote File : %v -- Remote File : %v", fn, rPath)
+	err = hdfsClient.CopyToRemote(fn, rPath)
 	if err != nil {
 
 		e := err.Error()
@@ -202,7 +296,6 @@ func moveFileToHDFS(f os.FileInfo) (res bool, err error) {
 			os.Remove(fn)
 		} else {
 
-			os.Exit(1)
 			res = false
 		}
 	} else {
@@ -213,7 +306,7 @@ func moveFileToHDFS(f os.FileInfo) (res bool, err error) {
 }
 
 
-func rotateFileLoop(s *time.Time, f **os.File, ow **goavro.OCFWriter, i *int) {
+func RotateFileLoop(s *time.Time, f **os.File, ow **goavro.OCFWriter, i *int) (err error) {
 
 	if *i == 0 {
 		return
@@ -224,7 +317,7 @@ func rotateFileLoop(s *time.Time, f **os.File, ow **goavro.OCFWriter, i *int) {
 	(*f).Close()
 
 	// REMOVE Change this!
-	err := hdfsClient.CopyToRemote(fn, ""+"/"+rfn)
+	err = hdfsClient.CopyToRemote(fn, ""+"/"+rfn)
 	if err != nil {
 		logger.Error("Error moving file to HDFS, %v", err)
 		os.Exit(1)
@@ -252,5 +345,6 @@ func rotateFileLoop(s *time.Time, f **os.File, ow **goavro.OCFWriter, i *int) {
 
 	*i = 0
 	*s = time.Now()
-}
 
+	return
+}

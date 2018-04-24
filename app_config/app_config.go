@@ -52,46 +52,21 @@ type postgresxl struct {
 
 type kafka struct {
 
-// Used for push
-//	EnableKafkaPush       bool 	// remove
-	KafkaBrokers          []string
-//	KafkaBrokersCassandra []string	// remove
+	KafkaBrokers          			[]string		// List of server brokers
+	FlushFrequencyMilliSec   		int 			// How frequently to flush files
 
-	// List of topics to handle from this node..
-//	TopicsListForThisNode string	// remove -- make this an array of string
-	// TopicsListForThisNode []string	// remove -- make this an array of string
-	//	HivePushTopic         string	// remove
-
-//	AvroSchemaFile           string		// remove
-	MessageSendRetryAttempts int
-	FlushFrequencyMilliSec   int 		// Use this?
-
-	// Enable background worker
-//	EnableKafkaBackgroundWorkerMode bool		// remove
 	HDFSConnPath                    string
 	HdfsStagingFolder               string
 	RecordsPerAvroFile              int
 
 	ApiConfigFolder					string
 	ApiFilesToLoad					[]string
-
-//	HdfsDatabaseFolder              string		// remove
-	AvroArchivesFolder              string		// ??
-	DisableSnappyCompression        bool		// ??
-//	MessagesInParallel              int			// remove
-
-// Make zip files or not
-//	EnableMovedFilesArchive bool				// remove
-
-//	FileMovementIntervalSec      int		// remove
-//	ArchiveMovedFilesIntervalSec int		// remove
-
-//	SchemaFile string						// remove
 }
 
 //AppConfig stores all the information regarding servers, database, applications
 // received from the config file
 type AppConfig struct {
+
 	Stream     appConfiguration
 	Cassandra  cassandra
 	Postgresxl postgresxl
