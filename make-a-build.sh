@@ -89,7 +89,7 @@ package main
 const BuildNumber = "${VERSIONNUMBER}"
 const AppVersion = \`
 Build Version: "${VERSIONNUMBER}" - Build Comment: "${USERCOMMENT}"
-Build Details: "${NOW}" - Dev: "${TEMPDEV}" - Machine: "${HOSTNAME}"@"${OSVERSIONNAME}"  
+Build Details: "${NOW}" - Dev: "${DEVNAME}" - Machine: "${HOSTNAME}"@"${OSVERSIONNAME}"  
 Git Details: Branch - "${GITBRANCH}" :: Commit - "${GITHASH}"@"${GITMESSAGE}"
 Go Details: "${GOVERSION}"
 \`
