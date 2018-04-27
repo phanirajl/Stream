@@ -18,7 +18,7 @@ var cassandraPass string
 
 func LoadPool() (err error) {
 
-	cassandraHost = Conf.Cassandra.Host
+	cassandraHost = Conf.Cassandra.Hosts
 	cassandraUID = Conf.Cassandra.Username
 	cassandraPass = Conf.Cassandra.Password
 

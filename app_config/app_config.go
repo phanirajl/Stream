@@ -8,15 +8,13 @@ import (
 	"runtime"
 	"strings"
 	"strconv"
+	"github.com/dminGod/Stream/models"
 )
 
 type appConfiguration struct {
 
 	StreamLogFolder    string
 	CurrentPid		   string
-
-	ApiConfigFolder					string
-	ApiFilesToLoad					[]string
 }
 
 type cassandra struct {
@@ -54,6 +52,7 @@ type AppConfig struct {
 	Cassandra  cassandra
 	Kafka      kafka
 	Hdfs	   hdfs
+	Apis	   []models.APIDetails
 }
 
 // Dont need to add the .toml in the name here

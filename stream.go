@@ -19,9 +19,9 @@ var Apis models.APIsRef
 // TODO: - !! Write tests for all the main functions
 
 // TODO: Get the config file from flag
-// TODO: Graceful shutdown of the application
 
 // ToDO: Errors need to be handled correctly to give more details about what is going on and what to do
+// TODO: Errors need to be logged in the place where they originate otherwise they will give wrong log references
 // TODO: When is this application going to crash? how is that cycle managed?
 // ToDO: How will they set the log level?
 // ToDO: Version and build for D30 needs to be integrated with this
@@ -51,9 +51,14 @@ func main() {
 		initError([]error{err})
 	}
 
+	avro_file_manager.Init()
 	err = avro_file_manager.InitialMoveFiles()
 	if err != nil {
-		initError([]error{err})
+		if strings.Contains(err.Error(), "TOPIC_NOT_FOUND") == false {
+			initError([]error{err})
+		} else {
+			logger.Error(err.Error())
+		}
 	}
 
 	err = Apis.MakeFirstFiles( Conf.Hdfs.HdfsStagingFolder, Conf.Stream.CurrentPid )
@@ -141,14 +146,9 @@ func setDefaultVals()(err []error) {
 		err = append(err, errors.New(fmt.Sprintf("No kafka brokers listed in config -- Entry : '%v' ", Conf.Kafka.KafkaBrokers)))
 	}
 
-	if len(Conf.Stream.ApiConfigFolder) == 0 {
+	if len(Conf.Apis) == 0 {
 
-		err = append(err, errors.New(fmt.Sprintf("API Config folder is blank -- Entry : '%v' ", Conf.Stream.ApiConfigFolder)))
-	}
-
-	if len(Conf.Stream.ApiFilesToLoad) == 0 {
-
-		err = append(err, errors.New(fmt.Sprintf("No API files to load configured 'ApiFilesToLoad' -- Entry : '%v' ", Conf.Stream.ApiFilesToLoad)))
+		err = append(err, errors.New(fmt.Sprintf("No API details in the toml config file -- please fill API details under section [[Apis]] -- Entry : '%v' ")))
 	}
 
 	return

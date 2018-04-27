@@ -21,9 +21,9 @@ import (
 // TODO: Integrate influx code with this
 
 // Send a single row to this value and it will give you back the gr that you want
-func MakeGr(res map[string]interface{}, as models.APIDetails) (gr []interface{}, errs []error) {
+func MakeGr(res map[string]interface{}, as *models.APIDetails) (gr []interface{}, errs []error) {
 
-	var tmp map[string]interface{}
+	tmp := make(map[string]interface{})
 
 	// Loop over all the values sent :
 	for k, v := range res {
@@ -46,7 +46,7 @@ func MakeGr(res map[string]interface{}, as models.APIDetails) (gr []interface{},
 		}
 
 		// Get the type of field
-		tmp[k], err = returnGeneric(scTy, isArray, compField, v)
+		tmp[k], err = returnGeneric(scTy, isArray, compField, k, v)
 		if err != nil {
 			e := errors.New(fmt.Sprintf("Error when converting to Avro format : '%v' ", err))
 			logger.Error(e.Error())
@@ -82,17 +82,20 @@ case "record":
  */
 
 
-func returnGeneric(typ string, isArr bool, isComp bool, s interface{}) (a interface{}, err error) {
+func returnGeneric(typ string, isArr bool, isComp bool, key string, s interface{}) (a interface{}, err error) {
 
 	var found bool
+	isBlank := true
 
 	switch s.(type) {
 	case string:
 		if typ == "string" {
 			if len(s.(string)) > 0 {
 				a = goavro.Union("string", s)
-				found = true
+				isBlank = false
 			}
+
+			found = true
 		}
 
 	case []string:
@@ -105,26 +108,34 @@ func returnGeneric(typ string, isArr bool, isComp bool, s interface{}) (a interf
 
 			if len(tmpArr) > 0 {
 				a = goavro.Union("array", tmpArr)
-				found = true
+				isBlank = false
 			}
+
+			found = true
 		}
 
 	case int64:
-		if s.(int64) > 0 && typ == "long" {
+		if typ == "long" {
 			a = goavro.Union("long", s)
 			found = true
 		}
 
 	case int:
-		if s.(int) > 0 && typ == "long" {
+		if typ == "long" {
 			a = goavro.Union("long", s)
+			isBlank = false
 			found = true
 		}
 
 	case gocql.UUID:
 		if typ == "string" {
 
-			a = goavro.Union("string", s.(gocql.UUID).String())
+			tmp := s.(gocql.UUID).String()
+			if len(tmp) > 0 {
+				a = goavro.Union("string", s.(gocql.UUID).String())
+				isBlank = false
+			}
+
 			found = true
 		}
 
@@ -155,14 +166,19 @@ func returnGeneric(typ string, isArr bool, isComp bool, s interface{}) (a interf
 
 				tmpArr = append(tmpArr, goavro.Union("string", lsrs))
 				a = goavro.Union("array", tmpArr)
-				found = true
+
+				isBlank = false
 			}
+
+			found = true
 		}
 	}
 
+	_ = isBlank
+
 	if found == false {
 
-		err = errors.New(fmt.Sprintf("Expecting '%v' - Got '%v' -- Value %v or could be blank field -- skipping field", typ, reflect.TypeOf(s).String()))
+		err = errors.New(fmt.Sprintf("Expecting '%v' - Got '%v' -- Key : %v -  Value %v or could be blank field -- skipping field", typ, reflect.TypeOf(s).String(), key, s))
 	}
 
 	return

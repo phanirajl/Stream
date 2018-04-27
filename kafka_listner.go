@@ -30,7 +30,7 @@ func getKafkaConsumer()(consumer *cluster.Consumer, err error) {
 	config.Consumer.Return.Errors = true
 	config.Group.Return.Notifications = true
 
-	consumer, err = cluster.NewConsumer(Conf.Kafka.KafkaBrokers, "HectorBGWorkers", Apis.GetTopics(), config)
+	consumer, err = cluster.NewConsumer(Conf.Kafka.KafkaBrokers, "HectorWorkers", Apis.GetTopics(), config)
 	if err != nil {
 		s := fmt.Sprintf("Unable to make consumer, Broker list : %v, Topics_list : %v, Config : %v, got error : %v", Conf.Kafka.KafkaBrokers, topicNames, config, err)
 		err = errors.New(s)
@@ -52,7 +52,7 @@ func getKafkaConsumer()(consumer *cluster.Consumer, err error) {
 		}
 	}()
 
-	defer consumer.Close()
+
 	return
 }
 
@@ -67,6 +67,9 @@ func KafkaListner() (err error) {
 		return
 	}
 
+
+	defer consumer.Close()
+
 	s := time.Now()
 	logger.Info("Starting Consumer loop, time now : '%v' ", s)
 	tick := time.NewTicker(time.Millisecond * time.Duration(int64(Conf.Hdfs.FlushFrequencyMilliSec)))
@@ -78,28 +81,29 @@ ConsumerLoop:
 		select {
 
 		case <-tick.C:
+			logger.Info("Got ticker event")
 			for _, v := range Apis {
 
-				err := avro_file_manager.RotateFileLoop(&*v)
+				logger.Info("Processing for topic : %v", v.KafkaTopic)
+				err := avro_file_manager.RotateFileLoop( v )
+
 				if err != nil {
 					logger.Error("Error in rotating file on ticker - Topic : %v -- File : %v -- Error : %v", v.KafkaTopic, v.CurFile.Name(), err)
 				}
 			}
 
-		case msg, ok := <-consumer.Messages():
+		case msg, okk := <-consumer.Messages():
 
-			logger.Info("Got a message..... msg : %v --- ok : %v ", msg, ok)
+			if okk {
 
-			if ok {
-
-			if _, ok := Apis[msg.Topic]; ok {
+			if _, k := Apis[msg.Topic]; k == false {
 
 				logger.Info("Message for topic %v -- not found in config, skipping", msg.Topic)
 				continue
 			}
 
 			pk := string(msg.Value)
-			ap := *Apis[msg.Topic]
+			ap := Apis[msg.Topic]
 
 			cassTry := 0
 
@@ -151,13 +155,16 @@ ConsumerLoop:
 
 				if (ap.RecCounter % Conf.Hdfs.RecordsPerAvroFile) == 0 {
 
-					avro_file_manager.RotateFileLoop(&ap)
+					avro_file_manager.RotateFileLoop(ap)
 				}
+
+				mm := fmt.Sprintf("Processed : %v", string(msg.Value))
+				logger.Info(mm)
 
 				consumer.MarkOffset(msg, "")
 			} else {
 
-				logger.Error("Problem with message that came in : msg is : %v ", msg.Value)
+				logger.Error("Problem with message that came in : msg is : %v ", msg)
 			}
 
 		case <-signals:

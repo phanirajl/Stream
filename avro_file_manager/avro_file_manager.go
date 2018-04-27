@@ -24,7 +24,7 @@ var Conf app_config.AppConfig
 var StartTime time.Time
 var Apis models.APIsRef
 
-func init(){
+func Init(){
 
 	Conf = app_config.GetConfig()
 	StartTime = time.Now()
@@ -86,7 +86,7 @@ func InitialMoveFiles()(err error) {
 	logger.Info("Attempting to move initial files with PID reference : '%v'", finalPids)
 	mList, err := moveOldFiles(finalPids, StartTime)
 	if err != nil {
-		e := fmt.Sprintf("HDFS Error in moving old files")
+		e := fmt.Sprintf("HDFS Error in moving old files -- Error : '%v'", err)
 		err = errors.New(e)
 	}
 
@@ -103,13 +103,13 @@ func shouldIMoveFile(file os.FileInfo, pids []string, appSt time.Time) (ret bool
 
 	fn := file.Name()
 	pid, err := getPidFromName( fn )
-	if err != nil {
+	if err != nil || len(pid) == 0 {
 		logger.Error("Checking movement of file no PID File : %v -- Error : %v ", fn, err)
 		return false
 	}
 
-	_, err = getTopicFromName( fn )
-	if err != nil {
+	tmpT, err := getTopicFromName( fn )
+	if err != nil || len(tmpT) == 0 {
 		logger.Error("Checking movement of file no File : %v -- Topic : %v", fn, err)
 		return false
 	}
@@ -275,9 +275,12 @@ func moveFileToHDFS(f os.FileInfo) (res bool, err error) {
 		return
 	}
 
+	fmt.Println(Apis)
+	fmt.Println(app_config.GetApis())
+
 	a, found := Apis.GetByTopic(topic)
 	if found == false {
-		s := fmt.Sprintf("No APIs for the topic found in the configuration -- Topic : '' -- Apis : ''")
+		s := fmt.Sprintf("TOPIC_NOT_FOUND No APIs for the topic found in the configuration -- Topic : '' -- Apis : ''")
 		err = errors.New(s)
 		return
 	}
@@ -329,20 +332,20 @@ func moveFileToHDFS(f os.FileInfo) (res bool, err error) {
 
 func RotateFileLoop(ap *models.APIDetails) (err error) {
 
-	if ap.RecCounter == 0 {
+	if (*ap).RecCounter == 0 {
 		return
 	}
 
-	fn := (*(*ap).CurFile).Name()
+	fn := (ap).CurFile.Name()
 	rfn := strings.Replace(fn, "/tmp/", "", 1)
-	(*(*ap).CurFile).Close()
+	(*(ap).CurFile).Close()
 
 	hdfsClient, err := getHdfsClient()
 	if err != nil {
 		return
 	}
 
-	err = hdfsClient.CopyToRemote(fn, path.Join((*ap).HDFSLocation, rfn))
+	err = hdfsClient.CopyToRemote(fn, path.Join((ap).HDFSLocation, rfn))
 	if err != nil {
 		logger.Error("Error moving file to HDFS, %v", err)
 		return
@@ -366,9 +369,9 @@ func RotateFileLoop(ap *models.APIDetails) (err error) {
 		os.Exit(1)
 	}
 
-	(*ap).Ow, err = goavro.NewOCFWriter(goavro.OCFConfig{W: (*ap).CurFile, CompressionName: "snappy", Schema: (*ap).Codec.Schema()})
+	(*ap).Ow, err = goavro.NewOCFWriter(goavro.OCFConfig{W: (ap).CurFile, CompressionName: "snappy", Schema: (ap).Codec.Schema()})
 	if err != nil {
-		logger.Error("Could not create OW file : %v  -- Error:  %v", (*(*ap).CurFile).Name(), err)
+		logger.Error("Could not create OW file : %v  -- Error:  %v", (*(ap).CurFile).Name(), err)
 		os.Exit(1)
 	}
 

@@ -5,23 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bcb1db86-7db8-4478-9c4b-a5ee99811249" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/generic_records.go" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/app_config/api_level.go" afterPath="$PROJECT_DIR$/app_config/api_level.go" />
       <change beforePath="$PROJECT_DIR$/app_config/app_config.go" afterPath="$PROJECT_DIR$/app_config/app_config.go" />
       <change beforePath="$PROJECT_DIR$/avro_file_manager/avro_file_manager.go" afterPath="$PROJECT_DIR$/avro_file_manager/avro_file_manager.go" />
-      <change beforePath="$PROJECT_DIR$/avro_file_manager/avro_file_manager_test.go" afterPath="$PROJECT_DIR$/avro_file_manager/avro_file_manager_test.go" />
       <change beforePath="$PROJECT_DIR$/cassandra_client.go" afterPath="$PROJECT_DIR$/cassandra_client.go" />
-      <change beforePath="$PROJECT_DIR$/cassandra_source_fetch.go" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/generic_factory.go" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/generic_record.go" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/gobuild.bat" afterPath="$PROJECT_DIR$/gobuild.bat" />
-      <change beforePath="$PROJECT_DIR$/kafka_listener.go" afterPath="$PROJECT_DIR$/kafka_listner.go" />
-      <change beforePath="$PROJECT_DIR$/lsr_model.go" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/generic_records.go" afterPath="$PROJECT_DIR$/generic_records.go" />
+      <change beforePath="$PROJECT_DIR$/kafka_listner.go" afterPath="$PROJECT_DIR$/kafka_listner.go" />
       <change beforePath="$PROJECT_DIR$/models/api_details_model.go" afterPath="$PROJECT_DIR$/models/api_details_model.go" />
-      <change beforePath="$PROJECT_DIR$/postgres.go" afterPath="$PROJECT_DIR$/postgres.go_" />
       <change beforePath="$PROJECT_DIR$/stream.go" afterPath="$PROJECT_DIR$/stream.go" />
-      <change beforePath="$PROJECT_DIR$/z_dev_reference/module_notes.md" afterPath="$PROJECT_DIR$/z_dev_reference/module_notes.md" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -31,14 +23,118 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file leaf-file-name="stream.go" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/stream.go">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="468">
-              <caret line="26" column="67" lean-forward="false" selection-start-line="26" selection-start-column="67" selection-end-line="26" selection-end-column="67" />
+              <caret line="26" column="0" lean-forward="false" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="67" />
               <folding>
                 <element signature="e#14#244#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="kafka_listner.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/kafka_listner.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="671">
+              <caret line="161" column="31" lean-forward="true" selection-start-line="161" selection-start-column="31" selection-end-line="161" selection-end-column="31" />
+              <folding>
+                <marker date="1524832853680" expanded="true" signature="1861:2162" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="consumer.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/vendor/github.com/bsm/sarama-cluster/consumer.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="226">
+              <caret line="99" column="12" lean-forward="false" selection-start-line="99" selection-start-column="12" selection-end-line="99" selection-end-column="12" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="api_details_model.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/models/api_details_model.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="18">
+              <caret line="84" column="18" lean-forward="false" selection-start-line="84" selection-start-column="18" selection-end-line="84" selection-end-column="18" />
+              <folding>
+                <element signature="e#16#225#0" expanded="true" />
+                <element signature="e#2204#2255#0" expanded="false" />
+                <element signature="e#3868#3937#0" expanded="false" />
+                <element signature="e#3901#3937#0" expanded="false" />
+                <element signature="e#3942#4270#0" expanded="false" />
+                <element signature="e#4049#4078#0" expanded="false" />
+                <element signature="e#4106#4270#0" expanded="false" />
+                <element signature="e#4140#4264#0" expanded="false" />
+                <element signature="e#4172#4257#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="cassandra_client.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cassandra_client.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="393">
+              <caret line="80" column="44" lean-forward="true" selection-start-line="80" selection-start-column="44" selection-end-line="80" selection-end-column="44" />
+              <folding>
+                <element signature="e#845#902#0" expanded="false" />
+                <element signature="e#1517#1662#0" expanded="false" />
+                <element signature="e#1709#1918#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="panic.go" pinned="false" current-in-tab="false">
+        <entry file="file:///usr/lib/go-1.9/src/runtime/panic.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="185">
+              <caret line="576" column="0" lean-forward="false" selection-start-line="576" selection-start-column="0" selection-end-line="576" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="app_config.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app_config/app_config.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="18">
+              <caret line="78" column="12" lean-forward="false" selection-start-line="78" selection-start-column="12" selection-end-line="78" selection-end-column="12" />
+              <folding>
+                <element signature="e#20#148#0" expanded="true" />
+                <element signature="n#!!block;n#getConfigFile#0" expanded="false" />
+                <element signature="e#5765#5787#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="api_level.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app_config/api_level.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="303">
+              <caret line="19" column="5" lean-forward="true" selection-start-line="19" selection-start-column="5" selection-end-line="19" selection-end-column="5" />
+              <folding>
+                <element signature="e#20#102#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="generic_records.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/generic_records.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1378">
+              <caret line="113" column="24" lean-forward="false" selection-start-line="113" selection-start-column="24" selection-end-line="113" selection-end-column="24" />
+              <folding>
+                <element signature="e#14#246#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -47,10 +143,10 @@
       <file leaf-file-name="avro_file_manager.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/avro_file_manager/avro_file_manager.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="270">
-              <caret line="228" column="100" lean-forward="true" selection-start-line="228" selection-start-column="100" selection-end-line="228" selection-end-column="100" />
+            <state relative-caret-position="383">
+              <caret line="377" column="0" lean-forward="false" selection-start-line="377" selection-start-column="0" selection-end-line="377" selection-end-column="0" />
               <folding>
-                <element signature="e#7464#7526#0" expanded="false" />
+                <element signature="e#7587#7649#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -67,16 +163,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>running</find>
-      <find>runnin</find>
-      <find>runn</find>
-      <find>max</find>
-      <find>failed to send</find>
-      <find>os.</find>
-      <find>Conf</find>
-      <find>SendMessage</find>
-      <find>uuid</find>
-      <find>err</find>
       <find>buffer</find>
       <find>remote</find>
       <find>error fetching</find>
@@ -97,6 +183,16 @@
       <find>NewCodec</find>
       <find>codec</find>
       <find>mapper</find>
+      <find>cannot</find>
+      <find>HDFS Error</find>
+      <find>No APIs</find>
+      <find>HDFS error</find>
+      <find>init</find>
+      <find>HDFS error in</find>
+      <find>old files</find>
+      <find>TOPIC_NO</find>
+      <find>strings.C</find>
+      <find>fmt.Print</find>
     </findStrings>
   </component>
   <component name="GOROOT" path="/usr/lib/go-1.9" />
@@ -118,7 +214,6 @@
         <option value="$PROJECT_DIR$/reference_cassandra_trigger_file/hdfs_push.gone" />
         <option value="$PROJECT_DIR$/lsr_model.go" />
         <option value="$PROJECT_DIR$/readme.md" />
-        <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/hdfs_process.go" />
         <option value="$PROJECT_DIR$/postgres.go" />
         <option value="$PROJECT_DIR$/vendor/github.com/colinmarc/hdfs/stat.go" />
@@ -126,18 +221,19 @@
         <option value="$PROJECT_DIR$/avro_file_manager.go" />
         <option value="$PROJECT_DIR$/kafka_listener.go" />
         <option value="$PROJECT_DIR$/app_config/avro_schema.go" />
-        <option value="$PROJECT_DIR$/app_config/api_level.go" />
         <option value="$PROJECT_DIR$/z_dev_reference/module_notes.md" />
         <option value="$PROJECT_DIR$/cassandra_source_fetch.go" />
         <option value="$PROJECT_DIR$/generic_factory.go" />
         <option value="$PROJECT_DIR$/generic_record.go" />
-        <option value="$PROJECT_DIR$/models/api_details_model.go" />
         <option value="$PROJECT_DIR$/gobuild.bat" />
-        <option value="$PROJECT_DIR$/kafka_listner.go" />
-        <option value="$PROJECT_DIR$/generic_records.go" />
+        <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/cassandra_client.go" />
         <option value="$PROJECT_DIR$/app_config/app_config.go" />
+        <option value="$PROJECT_DIR$/models/api_details_model.go" />
+        <option value="$PROJECT_DIR$/app_config/api_level.go" />
         <option value="$PROJECT_DIR$/avro_file_manager/avro_file_manager.go" />
+        <option value="$PROJECT_DIR$/kafka_listner.go" />
+        <option value="$PROJECT_DIR$/generic_records.go" />
         <option value="$PROJECT_DIR$/stream.go" />
       </list>
     </option>
@@ -194,6 +290,11 @@
               <item name="Stream" type="462c0819:PsiDirectoryNode" />
               <item name="avro_file_manager" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="Stream" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Stream" type="462c0819:PsiDirectoryNode" />
+              <item name="models" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -245,7 +346,7 @@
     <frame x="-1" y="-11" width="1922" height="1092" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1703125" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1703125" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -255,7 +356,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24539877" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3997955" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -291,25 +392,58 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="1" />
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/avro_file_manager/avro_file_manager.go</url>
+          <line>349</line>
+          <properties />
+          <option name="timeStamp" value="28" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/avro_file_manager/avro_file_manager.go</url>
+          <line>355</line>
+          <properties />
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/avro_file_manager/avro_file_manager.go</url>
+          <line>365</line>
+          <properties />
+          <option name="timeStamp" value="30" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/avro_file_manager/avro_file_manager.go</url>
+          <line>371</line>
+          <properties />
+          <option name="timeStamp" value="31" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/avro_file_manager/avro_file_manager.go</url>
+          <line>377</line>
+          <properties />
+          <option name="timeStamp" value="32" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/avro_file_manager/avro_file_manager.go</url>
+          <line>338</line>
+          <properties />
+          <option name="timeStamp" value="35" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/avro_file_manager/avro_file_manager.go</url>
+          <line>334</line>
+          <properties />
+          <option name="timeStamp" value="36" />
+        </line-breakpoint>
+      </breakpoints>
+      <breakpoints-dialog>
+        <breakpoints-dialog />
+      </breakpoints-dialog>
+      <option name="time" value="53" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/vendor/github.com/linkedin/goavro/ocf_writer.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2516">
-          <caret line="160" column="23" lean-forward="false" selection-start-line="160" selection-start-column="23" selection-end-line="160" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/github.com/antigloss/go/logger/logger.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="239">
-          <caret line="347" column="9" lean-forward="false" selection-start-line="347" selection-start-column="9" selection-end-line="347" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/vendor/github.com/colinmarc/hdfs/content_summary.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="62">
@@ -436,13 +570,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/z_dev_reference/apis/lsr.toml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/lib/go-1.9/src/os/file.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="316">
@@ -462,7 +589,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="544">
           <caret line="155" column="1" lean-forward="true" selection-start-line="155" selection-start-column="1" selection-end-line="155" selection-end-column="1" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -470,7 +596,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
           <caret line="18" column="14" lean-forward="false" selection-start-line="18" selection-start-column="14" selection-end-line="18" selection-end-column="14" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -478,7 +603,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="695">
           <caret line="123" column="19" lean-forward="false" selection-start-line="123" selection-start-column="19" selection-end-line="123" selection-end-column="19" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -486,18 +610,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="18">
           <caret line="27" column="7" lean-forward="false" selection-start-line="27" selection-start-column="7" selection-end-line="27" selection-end-column="7" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app_config/avro_schema.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/app_config/avro_schema.go" />
     <entry file="file://$PROJECT_DIR$/vendor/github.com/linkedin/goavro/codec.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="84">
@@ -510,19 +626,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="316">
           <caret line="154" column="5" lean-forward="false" selection-start-line="154" selection-start-column="5" selection-end-line="154" selection-end-column="5" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/z_dev_reference/module_notes.md">
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="11" column="8" lean-forward="true" selection-start-line="11" selection-start-column="8" selection-end-line="11" selection-end-column="8" />
-          <folding>
-            <marker date="1524744106253" expanded="true" signature="10067:10089" ph="h5: ##########hdfs_process.go" />
-          </folding>
-        </state>
-      </provider>
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="FIRST">
           <first_editor relative-caret-position="90">
@@ -534,31 +641,18 @@
           <second_editor />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cassandra_source_fetch.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="11" column="8" lean-forward="true" selection-start-line="11" selection-start-column="8" selection-end-line="11" selection-end-column="8" />
+          <folding>
+            <marker date="1524744106253" expanded="true" signature="10067:10089" ph="h5: ##########hdfs_process.go" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/generic_record.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="797">
-          <caret line="58" column="0" lean-forward="false" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lsr_model.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2124">
-          <caret line="122" column="28" lean-forward="false" selection-start-line="122" selection-start-column="28" selection-end-line="122" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/cassandra_source_fetch.go" />
+    <entry file="file://$PROJECT_DIR$/generic_record.go" />
+    <entry file="file://$PROJECT_DIR$/lsr_model.go" />
     <entry file="file://$PROJECT_DIR$/postgres.go_">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-549">
@@ -567,100 +661,122 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/models/api_details_model.go">
+    <entry file="file://$PROJECT_DIR$/z_dev_reference/apis/lsr.toml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="104" column="14" lean-forward="false" selection-start-line="104" selection-start-column="14" selection-end-line="104" selection-end-column="14" />
-          <folding>
-            <element signature="e#2204#2255#0" expanded="false" />
-            <element signature="e#3844#3913#0" expanded="false" />
-            <element signature="e#3877#3913#0" expanded="false" />
-            <element signature="e#3918#4246#0" expanded="false" />
-            <element signature="e#4025#4054#0" expanded="false" />
-            <element signature="e#4082#4246#0" expanded="false" />
-            <element signature="e#4116#4240#0" expanded="false" />
-            <element signature="e#4148#4233#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
-          <caret line="14" column="6" lean-forward="false" selection-start-line="14" selection-start-column="6" selection-end-line="14" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/kafka_listner.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-657">
-          <caret line="88" column="46" lean-forward="true" selection-start-line="88" selection-start-column="46" selection-end-line="88" selection-end-column="46" />
-          <folding>
-            <marker date="1524802156707" expanded="true" signature="1826:2067" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app_config/api_level.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2268">
-          <caret line="14" column="39" lean-forward="true" selection-start-line="14" selection-start-column="39" selection-end-line="14" selection-end-column="39" />
-          <folding>
-            <element signature="e#2362#2644#0" expanded="false" />
-            <element signature="e#2692#2791#0" expanded="false" />
-            <element signature="e#2844#2953#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="306">
+          <caret line="17" column="0" lean-forward="false" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/gobuild.bat">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="8" lean-forward="true" selection-start-line="0" selection-start-column="8" selection-end-line="0" selection-end-column="8" />
+          <caret line="0" column="8" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="74" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/generic_records.go">
+    <entry file="file://$PROJECT_DIR$/vendor/github.com/bsm/sarama-cluster/consumer.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="20" column="40" lean-forward="true" selection-start-line="20" selection-start-column="40" selection-end-line="20" selection-end-column="40" />
-          <folding>
-            <element signature="e#14#246#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="226">
+          <caret line="99" column="12" lean-forward="false" selection-start-line="99" selection-start-column="12" selection-end-line="99" selection-end-column="12" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/cassandra_client.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="498">
-          <caret line="54" column="0" lean-forward="true" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
+        <state relative-caret-position="393">
+          <caret line="80" column="44" lean-forward="true" selection-start-line="80" selection-start-column="44" selection-end-line="80" selection-end-column="44" />
           <folding>
-            <element signature="e#844#901#0" expanded="false" />
-            <element signature="e#1516#1661#0" expanded="false" />
-            <element signature="e#1708#1917#0" expanded="false" />
+            <element signature="e#845#902#0" expanded="false" />
+            <element signature="e#1517#1662#0" expanded="false" />
+            <element signature="e#1709#1918#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app_config/app_config.go">
+    <entry file="file:///usr/lib/go-1.9/src/runtime/panic.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="152" column="36" lean-forward="false" selection-start-line="152" selection-start-column="36" selection-end-line="152" selection-end-column="36" />
+        <state relative-caret-position="185">
+          <caret line="576" column="0" lean-forward="false" selection-start-line="576" selection-start-column="0" selection-end-line="576" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/api_details_model.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="18">
+          <caret line="84" column="18" lean-forward="false" selection-start-line="84" selection-start-column="18" selection-end-line="84" selection-end-column="18" />
           <folding>
-            <element signature="n#!!block;n#getConfigFile#0" expanded="false" />
-            <element signature="e#6220#6242#0" expanded="false" />
+            <element signature="e#16#225#0" expanded="true" />
+            <element signature="e#2204#2255#0" expanded="false" />
+            <element signature="e#3868#3937#0" expanded="false" />
+            <element signature="e#3901#3937#0" expanded="false" />
+            <element signature="e#3942#4270#0" expanded="false" />
+            <element signature="e#4049#4078#0" expanded="false" />
+            <element signature="e#4106#4270#0" expanded="false" />
+            <element signature="e#4140#4264#0" expanded="false" />
+            <element signature="e#4172#4257#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/avro_file_manager/avro_file_manager.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="228" column="100" lean-forward="true" selection-start-line="228" selection-start-column="100" selection-end-line="228" selection-end-column="100" />
+        <state relative-caret-position="383">
+          <caret line="377" column="0" lean-forward="false" selection-start-line="377" selection-start-column="0" selection-end-line="377" selection-end-column="0" />
           <folding>
-            <element signature="e#7464#7526#0" expanded="false" />
+            <element signature="e#7587#7649#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app_config/app_config.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="18">
+          <caret line="78" column="12" lean-forward="false" selection-start-line="78" selection-start-column="12" selection-end-line="78" selection-end-column="12" />
+          <folding>
+            <element signature="e#20#148#0" expanded="true" />
+            <element signature="n#!!block;n#getConfigFile#0" expanded="false" />
+            <element signature="e#5765#5787#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app_config/api_level.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="303">
+          <caret line="19" column="5" lean-forward="true" selection-start-line="19" selection-start-column="5" selection-end-line="19" selection-end-column="5" />
+          <folding>
+            <element signature="e#20#102#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kafka_listner.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="671">
+          <caret line="161" column="31" lean-forward="true" selection-start-line="161" selection-start-column="31" selection-end-line="161" selection-end-column="31" />
+          <folding>
+            <marker date="1524832853680" expanded="true" signature="1861:2162" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/generic_records.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1378">
+          <caret line="113" column="24" lean-forward="false" selection-start-line="113" selection-start-column="24" selection-end-line="113" selection-end-column="24" />
+          <folding>
+            <element signature="e#14#246#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -668,7 +784,7 @@
     <entry file="file://$PROJECT_DIR$/stream.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="468">
-          <caret line="26" column="67" lean-forward="false" selection-start-line="26" selection-start-column="67" selection-end-line="26" selection-end-column="67" />
+          <caret line="26" column="0" lean-forward="false" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="67" />
           <folding>
             <element signature="e#14#244#0" expanded="true" />
           </folding>

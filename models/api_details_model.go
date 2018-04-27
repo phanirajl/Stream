@@ -193,7 +193,6 @@ func (a *AvroSchemaParser) GetTypeByName(s string) (typ string, isArr bool, err 
 	return
 }
 
-
 type Field struct {
 
 	Name string `json:"name"`
@@ -209,6 +208,8 @@ type InField struct {
 }
 
 func NewAvroSP(s []byte) (ap AvroSchemaParser, err error) {
+
+	fmt.Println(string(s))
 
 	json.Unmarshal(s, &ap)
 	if err != nil {
