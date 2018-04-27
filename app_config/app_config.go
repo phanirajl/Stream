@@ -12,17 +12,16 @@ import (
 
 type appConfiguration struct {
 
-	// How to fetch the pgxc_ctl file?
-	EnableHivePush     bool // if
-	EnablePostgresPush bool // if
-	SchemaId           int
 	StreamLogFolder    string
 	CurrentPid		   string
+
+	ApiConfigFolder					string
+	ApiFilesToLoad					[]string
 }
 
 type cassandra struct {
 
-	Host                  []string
+	Hosts                 []string
 	Username              string
 	Password              string
 	NumConnectionsPerHost int
@@ -34,31 +33,17 @@ type cassandra struct {
 	KeySpace              string
 }
 
-type postgresxl struct {
-
-	Username              string
-	Password              string
-	Database              string
-	Port                  string
-	Host                  []string
-	MaxOpenConns          int
-	MaxIdleConns          int
-	ConnMaxLifetime       int
-	ThrottleFirstPG       int
-	ThrottleFirstPGEnable bool
-}
-
 type kafka struct {
 
 	KafkaBrokers          			[]string		// List of server brokers
-	FlushFrequencyMilliSec   		int 			// How frequently to flush files
+}
+
+type hdfs struct {
 
 	HDFSConnPath                    string
 	HdfsStagingFolder               string
 	RecordsPerAvroFile              int
-
-	ApiConfigFolder					string
-	ApiFilesToLoad					[]string
+	FlushFrequencyMilliSec   		int
 }
 
 //AppConfig stores all the information regarding servers, database, applications
@@ -67,8 +52,8 @@ type AppConfig struct {
 
 	Stream     appConfiguration
 	Cassandra  cassandra
-	Postgresxl postgresxl
 	Kafka      kafka
+	Hdfs	   hdfs
 }
 
 // Dont need to add the .toml in the name here

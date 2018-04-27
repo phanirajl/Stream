@@ -16,8 +16,8 @@ func CheckLoadAPIs() ( errs []error ) {
 
 	var e error
 
-	folder := Config.Kafka.ApiConfigFolder
-	files := Config.Kafka.ApiFilesToLoad
+	folder := Config.Stream.ApiConfigFolder
+	files := Config.Stream.ApiFilesToLoad
 
 	// Make sure we don't have duplicates in the array .. if yes throw an error
 	dupCheck := noDuplicatesCheck(files)
@@ -56,8 +56,8 @@ func GetApis()(a models.APIsRef) {
 
 func LoadData() (a models.APIsRef, err error) {
 
-	folder := Config.Kafka.ApiConfigFolder
-	files := Config.Kafka.ApiFilesToLoad
+	folder := Config.Stream.ApiConfigFolder
+	files := Config.Stream.ApiFilesToLoad
 
 	a = make(map[string]*models.APIDetails)
 

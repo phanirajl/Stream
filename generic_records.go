@@ -59,6 +59,29 @@ func MakeGr(res map[string]interface{}, as models.APIDetails) (gr []interface{},
 	return
 }
 
+/*
+Avro Types List
+"boolean":
+"bytes":
+"double":
+"float":
+"int":
+"long":
+"null":
+"string":
+
+case "array":
+
+case "enum":
+case "fixed":
+case "map":
+
+case "record":
+
+
+ */
+
+
 func returnGeneric(typ string, isArr bool, isComp bool, s interface{}) (a interface{}, err error) {
 
 	var found bool

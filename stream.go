@@ -56,7 +56,7 @@ func main() {
 		initError([]error{err})
 	}
 
-	err = Apis.MakeFirstFiles( Conf.Kafka.HdfsStagingFolder, Conf.Stream.CurrentPid )
+	err = Apis.MakeFirstFiles( Conf.Hdfs.HdfsStagingFolder, Conf.Stream.CurrentPid )
 	if err != nil {
 		initError([]error{err})
 	}
@@ -113,27 +113,27 @@ func InitializeApp() {
 
 func setDefaultVals()(err []error) {
 
-	Conf.Kafka.HdfsStagingFolder = strings.TrimRight(hdfsStagingFolder, "/")
+	Conf.Hdfs.HdfsStagingFolder = strings.TrimRight(hdfsStagingFolder, "/")
 
-	if Conf.Kafka.HdfsStagingFolder == "" {
-		Conf.Kafka.HdfsStagingFolder = "/tmp"
+	if Conf.Hdfs.HdfsStagingFolder == "" {
+		Conf.Hdfs.HdfsStagingFolder = "/tmp"
 	}
 
 	// By default if the frequency is not set
 	//  make it 20 seconds
-	if Conf.Kafka.FlushFrequencyMilliSec == 0 || Conf.Kafka.FlushFrequencyMilliSec <= 500 {
+	if Conf.Hdfs.FlushFrequencyMilliSec == 0 || Conf.Hdfs.FlushFrequencyMilliSec <= 500 {
 
-		Conf.Kafka.FlushFrequencyMilliSec = 20000
+		Conf.Hdfs.FlushFrequencyMilliSec = 20000
 
 		// Why are you flushing files so often?
-		if Conf.Kafka.FlushFrequencyMilliSec <= 500 {
+		if Conf.Hdfs.FlushFrequencyMilliSec <= 500 {
 
 			logger.Warn("Flush frequency set to less than 500ms, will not allow less than 1 second -- set frequency to default")
 		}
 	}
 
-	if Conf.Kafka.RecordsPerAvroFile == 0 {
-		Conf.Kafka.RecordsPerAvroFile = 50
+	if Conf.Hdfs.RecordsPerAvroFile == 0 {
+		Conf.Hdfs.RecordsPerAvroFile = 50
 	}
 
 	if len(Conf.Kafka.KafkaBrokers) == 0 {
@@ -141,14 +141,14 @@ func setDefaultVals()(err []error) {
 		err = append(err, errors.New(fmt.Sprintf("No kafka brokers listed in config -- Entry : '%v' ", Conf.Kafka.KafkaBrokers)))
 	}
 
-	if len(Conf.Kafka.ApiConfigFolder) == 0 {
+	if len(Conf.Stream.ApiConfigFolder) == 0 {
 
-		err = append(err, errors.New(fmt.Sprintf("API Config folder is blank -- Entry : '%v' ", Conf.Kafka.ApiConfigFolder)))
+		err = append(err, errors.New(fmt.Sprintf("API Config folder is blank -- Entry : '%v' ", Conf.Stream.ApiConfigFolder)))
 	}
 
-	if len(Conf.Kafka.ApiFilesToLoad) == 0 {
+	if len(Conf.Stream.ApiFilesToLoad) == 0 {
 
-		err = append(err, errors.New(fmt.Sprintf("No API files to load configured 'ApiFilesToLoad' -- Entry : '%v' ", Conf.Kafka.ApiFilesToLoad)))
+		err = append(err, errors.New(fmt.Sprintf("No API files to load configured 'ApiFilesToLoad' -- Entry : '%v' ", Conf.Stream.ApiFilesToLoad)))
 	}
 
 	return
@@ -165,9 +165,9 @@ func initError(errs []error){
 
 func testHdfsClient()( err error ){
 
-	hd, err := hdfs.NewClient(hdfs.ClientOptions{Addresses: []string{Conf.Kafka.HDFSConnPath}, User: "hdfs"})
+	hd, err := hdfs.NewClient(hdfs.ClientOptions{Addresses: []string{Conf.Hdfs.HDFSConnPath}, User: "hdfs"})
 	if err != nil {
-		err = errors.New(fmt.Sprintf("Could not connect to HDFS, Config: %v, Error: %v", Conf.Kafka.HDFSConnPath, err))
+		err = errors.New(fmt.Sprintf("Could not connect to HDFS, Config: %v, Error: %v", Conf.Hdfs.HDFSConnPath, err))
 		hd = nil
 		return
 	} else {

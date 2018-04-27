@@ -33,9 +33,9 @@ func init(){
 
 func getHdfsClient()( hd *hdfs.Client, err error ) {
 
-	hd, err = hdfs.NewClient(hdfs.ClientOptions{Addresses: []string{Conf.Kafka.HDFSConnPath}, User: "hdfs"})
+	hd, err = hdfs.NewClient(hdfs.ClientOptions{Addresses: []string{Conf.Hdfs.HDFSConnPath}, User: "hdfs"})
 	if err != nil {
-		err = errors.New(fmt.Sprintf("Could not connect to HDFS, Config: %v, Error: %v", Conf.Kafka.HDFSConnPath, err))
+		err = errors.New(fmt.Sprintf("Could not connect to HDFS, Config: %v, Error: %v", Conf.Hdfs.HDFSConnPath, err))
 		hd = nil
 		return
 	}
@@ -45,7 +45,7 @@ func getHdfsClient()( hd *hdfs.Client, err error ) {
 
 func moveOldFiles(pids []string, st time.Time) (MovedList []string, err error) {
 
-	files, err := ioutil.ReadDir(fmt.Sprintf("%v/", Conf.Kafka.HdfsStagingFolder))
+	files, err := ioutil.ReadDir(fmt.Sprintf("%v/", Conf.Hdfs.HdfsStagingFolder))
 	if err != nil {
 		logger.Error("Error reading hdfs dir for initial moving files", err)
 		return
@@ -73,7 +73,7 @@ func InitialMoveFiles()(err error) {
 
 	// Initial move old files
 	myPid := strconv.Itoa(os.Getpid())
-	uq := UniquePidsInTmp(Conf.Kafka.HdfsStagingFolder)
+	uq := UniquePidsInTmp(Conf.Hdfs.HdfsStagingFolder)
 	curpids, err := currentPids(`stream`)
 	if err != nil {
 		return
@@ -265,7 +265,7 @@ func moveFileToHDFS(f os.FileInfo) (res bool, err error) {
 	// removeFolder := "/" + Conf.Kafka.HdfsStagingFolder + "/"
 
 	//fn := removeFolder + f.Name()
-	fn := path.Join(Conf.Kafka.HdfsStagingFolder, f.Name())
+	fn := path.Join(Conf.Hdfs.HdfsStagingFolder, f.Name())
 	rfn :=  f.Name() // strings.Replace(fn, removeFolder, "", 1)
 
 	logger.Info("Moving file to HDFS, local rfn : '%v'", rfn)
@@ -360,7 +360,7 @@ func RotateFileLoop(ap *models.APIDetails) (err error) {
 		logger.Error("Error generating random UUID : %v ", err)
 	}
 
-	(*ap).CurFile, err = os.Create(fmt.Sprintf("%v/pid%v_~%v~_%v_%v.avro", Conf.Kafka.HdfsStagingFolder, Conf.Stream.CurrentPid, ap.KafkaTopic, ran.String(), t))
+	(*ap).CurFile, err = os.Create(fmt.Sprintf("%v/pid%v_~%v~_%v_%v.avro", Conf.Hdfs.HdfsStagingFolder, Conf.Stream.CurrentPid, ap.KafkaTopic, ran.String(), t))
 	if err != nil {
 		logger.Error("Error creating file : %v", err)
 		os.Exit(1)

@@ -69,7 +69,7 @@ func KafkaListner() (err error) {
 
 	s := time.Now()
 	logger.Info("Starting Consumer loop, time now : '%v' ", s)
-	tick := time.NewTicker(time.Millisecond * time.Duration(int64(Conf.Kafka.FlushFrequencyMilliSec)))
+	tick := time.NewTicker(time.Millisecond * time.Duration(int64(Conf.Hdfs.FlushFrequencyMilliSec)))
 
 	// TODO: Need to manage the 5 internal fields for each record
 
@@ -149,7 +149,7 @@ ConsumerLoop:
 					ap.Inc()
 				}
 
-				if (ap.RecCounter % Conf.Kafka.RecordsPerAvroFile) == 0 {
+				if (ap.RecCounter % Conf.Hdfs.RecordsPerAvroFile) == 0 {
 
 					avro_file_manager.RotateFileLoop(&ap)
 				}
