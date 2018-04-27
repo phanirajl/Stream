@@ -15,4 +15,4 @@ cassandra_client
 .idea\
 .idea/workspace.xml
 
-
+builds/*

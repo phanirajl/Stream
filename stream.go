@@ -80,7 +80,10 @@ func InitializeApp() {
 	fmt.Println("Starting application..")
 	fmt.Println("Logfolder is : " , Conf.Stream.StreamLogFolder)
 	fmt.Println("Configuration is : " , Conf)
-
+	fmt.Println("\n---------------\n")
+	fmt.Println(AppVersion)
+	fmt.Println("\n---------------\n")
+	logger.Info(AppVersion)
 	var errs []error
 
 	if len(Conf.Stream.StreamLogFolder) == 0 {
