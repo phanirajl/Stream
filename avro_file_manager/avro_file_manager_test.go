@@ -45,7 +45,7 @@ Conf.Kafka.HdfsStagingFolder = "testdata/pid_files/"
 app_config.Config.Stream.StreamLogFolder = "testdata/logs/"
 appStartedTime = time.Now()
 
-moved, _ := MoveOldFiles(validPids)
+moved, _ := moveOldFiles(validPids)
 
 if len(moved) > 0 {
 t.Error("Moving files to HDFS on test environment?")

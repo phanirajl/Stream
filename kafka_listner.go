@@ -11,9 +11,7 @@ import (
 	"os"
 	"os/signal"
 	"time"
-	"github.com/dminGod/Stream/models"
-	"github.com/dminGod/Stream/app_config"
-	"strings"
+	"github.com/dminGod/Stream/avro_file_manager"
 )
 
 var sProducer sarama.SyncProducer
@@ -25,65 +23,19 @@ var appStartedTime time.Time
 
 var topicNames []string
 
-
-
-func loadApis() (a models.APIsRef, e error) {
-
-	var err []error
-	err = app_config.CheckLoadAPIs()
-	if len(err) > 0 {
-		logger.Error("There were errors in loading API details : ")
-
-		var t []string
-		for _, v := range err {
-
-			t = append(t, v.Error())
-		}
-		e = errors.New(strings.Join(t, " -- "))
-	}
-
-	Apis = app_config.GetApis()
-
-	return
-}
-
-func kafkaConsumer()(consumer *cluster.Consumer, err error) {
-
-	Apis, err = loadApis()
-	if err != nil {
-		return
-	}
-
-	topicNames = Apis.GetTopics()
+func getKafkaConsumer()(consumer *cluster.Consumer, err error) {
 
 	// Create Kafka Consumer
 	config := cluster.NewConfig()
 	config.Consumer.Return.Errors = true
 	config.Group.Return.Notifications = true
 
-	consumer, err = cluster.NewConsumer(Conf.Kafka.KafkaBrokers, "HectorBGWorkers", topicNames, config)
+	consumer, err = cluster.NewConsumer(Conf.Kafka.KafkaBrokers, "HectorBGWorkers", Apis.GetTopics(), config)
 	if err != nil {
 		s := fmt.Sprintf("Unable to make consumer, Broker list : %v, Topics_list : %v, Config : %v, got error : %v", Conf.Kafka.KafkaBrokers, topicNames, config, err)
 		err = errors.New(s)
 		return
 	}
-
-	defer consumer.Close()
-	return
-}
-
-func KafkaListener() (err error) {
-
-	// trap SIGINT to trigger a shutdown.
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt)
-
-	consumer, err := kafkaConsumer()
-	if err != nil {
-		return
-	}
-
-
 
 	// consume errors
 	go func() {
@@ -100,21 +52,39 @@ func KafkaListener() (err error) {
 		}
 	}()
 
+	defer consumer.Close()
+	return
+}
+
+func KafkaListner() (err error) {
+
+	// trap SIGINT to trigger a shutdown.
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, os.Interrupt)
+
+	consumer, err := getKafkaConsumer()
+	if err != nil {
+		return
+	}
+
 	s := time.Now()
 	logger.Info("Starting Consumer loop, time now : '%v' ", s)
 	tick := time.NewTicker(time.Millisecond * time.Duration(int64(Conf.Kafka.FlushFrequencyMilliSec)))
+
+	// TODO: Need to manage the 5 internal fields for each record
 
 ConsumerLoop:
 	for {
 		select {
 
 		case <-tick.C:
-			// For each topic, rotate the file
-				// s - 	Time of starting listening -- will be OS level
-				// f - 	OS.create file for this topic
-				// ow -	OCF writer for this topic
-				// i - Counter of how many records have been written
-			RotateFileLoop(&s, &f, &ow, &i)
+			for _, v := range Apis {
+
+				err := avro_file_manager.RotateFileLoop(&*v)
+				if err != nil {
+					logger.Error("Error in rotating file on ticker - Topic : %v -- File : %v -- Error : %v", v.KafkaTopic, v.CurFile.Name(), err)
+				}
+			}
 
 		case msg, ok := <-consumer.Messages():
 
@@ -122,15 +92,20 @@ ConsumerLoop:
 
 			if ok {
 
-				// n := time.Now();
-				// moreTime := n.Sub(s).Nanoseconds() / int64(time.Millisecond) > 20000
-				// s, f, ow
-				pk := string(msg.Value)
-				cassTry := 0
+			if _, ok := Apis[msg.Topic]; ok {
+
+				logger.Info("Message for topic %v -- not found in config, skipping", msg.Topic)
+				continue
+			}
+
+			pk := string(msg.Value)
+			ap := *Apis[msg.Topic]
+
+			cassTry := 0
 
 			getCass:
 				// Pass the query to cassandra as well
-				message, err := Select(pk)
+				message, err := Select(ap.Query, pk)
 				if err != nil {
 					logger.Error("Error processing cassandra request, Error : %v -- Exiting", err)
 					// Before you kill this, save the file for HDFS and try to push that a few times if that goes
@@ -158,18 +133,25 @@ ConsumerLoop:
 					}
 				}
 
-				gr := FetchAndProcessCassandra(message)
-				err = ow.Append(gr)
-				if err != nil {
-					logger.Error("Error when appending to ow file : %v ", err)
-					os.Exit(1)
+				for _, v := range message {
+
+					gr, e := MakeGr(v, ap)
+					if e != nil {
+						logger.Error("Some errors while making Avro gr -- Err : %v", err)
+					}
+
+					err = ap.Ow.Append(gr)
+					if err != nil {
+						logger.Error("Error when appending to ow file : %v ", err)
+						os.Exit(1)
+					}
+
+					ap.Inc()
 				}
 
-				i += 1
+				if (ap.RecCounter % Conf.Kafka.RecordsPerAvroFile) == 0 {
 
-				if (i % Conf.Kafka.RecordsPerAvroFile) == 0 {
-
-					RotateFileLoop(&s, &f, &ow, &i)
+					avro_file_manager.RotateFileLoop(&ap)
 				}
 
 				consumer.MarkOffset(msg, "")

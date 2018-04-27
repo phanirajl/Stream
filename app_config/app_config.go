@@ -7,13 +7,8 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"strconv"
 )
-
-// TODO : Some of the configuration items are from older structs from D50 code that was written -- Need to remove the useless ones
-
-// The application will have :
-// api_config_folder
-// config_files to load
 
 type appConfiguration struct {
 
@@ -22,9 +17,11 @@ type appConfiguration struct {
 	EnablePostgresPush bool // if
 	SchemaId           int
 	StreamLogFolder    string
+	CurrentPid		   string
 }
 
 type cassandra struct {
+
 	Host                  []string
 	Username              string
 	Password              string
@@ -38,6 +35,7 @@ type cassandra struct {
 }
 
 type postgresxl struct {
+
 	Username              string
 	Password              string
 	Database              string
@@ -95,7 +93,6 @@ var Config AppConfig
 func init() {
 
 	GetConfiguration()
-
 }
 
 //GetConfiguration gets the configuration details from the .toml file
@@ -129,6 +126,8 @@ func GetConfiguration() {
 		fmt.Println("There was an error reading in configuration. Error : ", verr.Error())
 	}
 
+	Config.Stream.CurrentPid = strconv.Itoa( os.Getpid() )
+
 	configLoaded = true
 }
 
@@ -153,6 +152,9 @@ func GetConfig() AppConfig {
 		-- If environment variables set and file not found app will exit with 1
 	If flags and env variables not found then common locations will be used
 	If config file not found in any of the places then app will exit with  code 1
+
+	TODO: flagConfigFile does not come from anywhere
+	TODO: If you have an environement variable set then why do you need to check linux and windows folders
 */
 func getConfigFile() (retFilePath string, retErrors []error) {
 
@@ -228,7 +230,7 @@ func getConfigFile() (retFilePath string, retErrors []error) {
 				retFilePath = envConfigFile
 			} else {
 
-				retErrors = append(retErrors, errors.New("Unable to locate the config file that is set on environment variable DWARA_CONFIG_FILE "+envConfigFile+" exiting"))
+				retErrors = append(retErrors, errors.New("Unable to locate the config file that is set on environment variable STREAM_CONFIG_FILE " + envConfigFile + " exiting"))
 			}
 		}
 	}

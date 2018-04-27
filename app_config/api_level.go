@@ -7,6 +7,7 @@ import (
 	"errors"
 	"github.com/spf13/viper"
 	"github.com/dminGod/Stream/models"
+	"io/ioutil"
 )
 
 var Apis models.APIsRef
@@ -80,6 +81,18 @@ func LoadData() (a models.APIsRef, err error) {
 			break
 		}
 
+		fc, e := ioutil.ReadFile(conf.AvroSchemaFile)
+		if e != nil {
+			err = e
+			break
+		}
+
+		tm, e := models.NewAvroSP( fc )
+		if e != nil {
+			err = errors.New(fmt.Sprintf("Error when parsing avro schema to JSON -- Err : %v", e.Error()))
+		}
+
+		conf.AvroFields = tm
 		a[conf.KafkaTopic] = &conf
 	}
 
@@ -113,8 +126,6 @@ func checkApi(f string, c models.APIDetails) (err error) {
 	return
 }
 
-
-
 /*
 	Given the toml contents -- run checks on and return errors if any
 
@@ -137,22 +148,21 @@ func validateLoadToml(folder string, file string)(c models.APIDetails, err error
 func noDuplicatesCheck(files []string)(ret bool) {
 
 	fLen := len(files)
-	uq := make(map[string]interface{})
+	uq := make(map[string]struct{})
 
 	for _, v := range files {
-		uq[v] = nil
+		uq[v] = struct{}{}
 	}
 
 	return fLen == len(uq)
 }
 
-func folderExistsCheck(path string) (ret bool){
+func folderExistsCheck(path string) (ret bool) {
 
-	_, err := os.Open(path)
-	if err == nil {
+	if _, err := os.Stat(path); err == nil {
+		// path/to/whatever exists
 		ret = true
 	}
-
 	return
 }
 
@@ -180,14 +190,6 @@ func filesExistCheck(folder string, files []string) (err []error) {
 	return
 }
 
-
-
-
-func populateToml(confs map[string]string)(err error) {
-
-
-	return
-}
 
 
 

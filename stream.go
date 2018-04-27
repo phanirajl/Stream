@@ -6,7 +6,6 @@ import (
 	"github.com/colinmarc/hdfs"
 	"github.com/dminGod/Stream/app_config"
 	"os"
-	"strconv"
 	"errors"
 	"strings"
 	"github.com/dminGod/Stream/avro_file_manager"
@@ -19,16 +18,19 @@ var Apis models.APIsRef
 // TODO: - !! The applicatoin needs to have a graceful shutdown happen so it can complete whatever its doing and then exit
 // TODO: - !! Write tests for all the main functions
 
-// TODO: The File name should have the topic name in it -- only then will you be able to figure out what table the file belongs to when you see orphans
-// TODO: There needs to be a common place to be able to get the API related stuff -- we should do it like the config module -- You will need to do lookups on the topic name from old orphans
+// TODO: Get the config file from flag
+// TODO: Graceful shutdown of the application
 
+// ToDO: Errors need to be handled correctly to give more details about what is going on and what to do
+// TODO: When is this application going to crash? how is that cycle managed?
+// ToDO: How will they set the log level?
+// ToDO: Version and build for D30 needs to be integrated with this
 
 func init() {
 
 	app_config.GetConfiguration()
 	Conf = app_config.GetConfig()
 
-	return
 }
 
 func main() {
@@ -54,11 +56,13 @@ func main() {
 		initError([]error{err})
 	}
 
-	pid := strconv.Itoa( os.Getpid() )
-	Apis.MakeFirstFiles( Conf.Kafka.HdfsStagingFolder, pid )
+	err = Apis.MakeFirstFiles( Conf.Kafka.HdfsStagingFolder, Conf.Stream.CurrentPid )
+	if err != nil {
+		initError([]error{err})
+	}
 
 	// Start the actual listening
-	err = KafkaListener()
+	err = KafkaListner()
 	if err != nil {
 		initError([]error{ err })
 	}
@@ -66,7 +70,7 @@ func main() {
 	logger.Info("Exiting application")
 }
 
-func InitializeApp(){
+func InitializeApp() {
 
 	fmt.Println("Starting application..")
 	fmt.Println("Logfolder is : " , Conf.Stream.StreamLogFolder)
@@ -84,7 +88,6 @@ func InitializeApp(){
 		fmt.Println("Couldn't initialize logger, Error : ", err)
 	}
 	logger.SetFilenamePrefix("stream.%P.%U", "stream.%P.%U")
-
 
 	logger.Info("Setting default config values")
 	errs = setDefaultVals()
@@ -160,8 +163,7 @@ func initError(errs []error){
 	os.Exit(1)
 }
 
-
-func testHdfsClient()( err error ) {
+func testHdfsClient()( err error ){
 
 	hd, err := hdfs.NewClient(hdfs.ClientOptions{Addresses: []string{Conf.Kafka.HDFSConnPath}, User: "hdfs"})
 	if err != nil {
@@ -174,28 +176,4 @@ func testHdfsClient()( err error ) {
 
 	return
 }
-
-/*
-Postgres connection logic -- if needed later :
-	if postMode == true {
-
-		logger.SetFilenamePrefix("post.%P.%U", "post.%P.%U")
-		logger.Info("Starting postgres push from stream")
-		LoadPostgres()
-		time.Sleep(5 * time.Second)
-		PostgresPush()
-
-	} else {
-
-		logger.SetFilenamePrefix("hdfs.%P.%U", "hdfs.%P.%U")
-
-		logger.Info(fmt.Sprintf("Starting Cassandra listen from stream"))
-		cassErr := LoadPool()
-		if cassErr != nil {
-			logger.Error(fmt.Sprintf("There was an error in loading Cassandra: %v", cassErr))
-		}
-
-
- */
-
 
