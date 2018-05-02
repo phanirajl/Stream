@@ -35,6 +35,7 @@ func init() {
 
 func main() {
 
+	CheckFlags()
 	InitializeApp()
 
 	var err error

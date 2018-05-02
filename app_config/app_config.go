@@ -67,6 +67,7 @@ var configLoaded bool
 //Config is used to load the configuration from the toml file
 var Config AppConfig
 
+var FlagConfigFile string
 /*
 	This module handles the application configuration
 	configuration can be passed from the configuration file
@@ -142,10 +143,9 @@ func GetConfig() AppConfig {
 */
 func getConfigFile() (retFilePath string, retErrors []error) {
 
-	var flagConfigFile string
 	//	flag.StringVar(&flagConfigFile, "config_file", "", "Customize the path of the configuration file using this flag.")
 	//	flag.Parse()
-
+	flagConfigFile := FlagConfigFile
 	envConfigFile := os.Getenv("STREAM_CONFIG_FILE")
 
 	// If we are in windows, check the folders we generally put stuff in
@@ -193,8 +193,10 @@ func getConfigFile() (retFilePath string, retErrors []error) {
 		}
 	}
 
-	if len(flagConfigFile) > 0 {
+	fmt.Println("flag config file",flagConfigFile)
 
+	if len(flagConfigFile) > 0 {
+		fmt.Println("flag Config File is found <3 ",flagConfigFile)
 		if fileExists(flagConfigFile) {
 
 			retFilePath = flagConfigFile
