@@ -12,6 +12,7 @@ import (
 	"os/signal"
 	"time"
 	"github.com/dminGod/Stream/avro_file_manager"
+	"github.com/dminGod/Stream/influx_writer"
 )
 
 var sProducer sarama.SyncProducer
@@ -36,7 +37,6 @@ func getKafkaConsumer()(consumer *cluster.Consumer, err error) {
 		err = errors.New(s)
 		return
 	}
-
 	// consume errors
 	go func() {
 		for err := range consumer.Errors() {
@@ -56,7 +56,7 @@ func getKafkaConsumer()(consumer *cluster.Consumer, err error) {
 	return
 }
 
-func KafkaListner() (err error) {
+func KafkaListner(writer influx_writer.InfluxWriter, influxEnabled bool) (err error) {
 
 	// trap SIGINT to trigger a shutdown.
 	signals := make(chan os.Signal, 1)
@@ -93,7 +93,8 @@ ConsumerLoop:
 			}
 
 		case msg, okk := <-consumer.Messages():
-
+			logger.Info("messages received : %v ",msg)
+			fmt.Println("message receivwed",msg)
 			if okk {
 
 			if _, k := Apis[msg.Topic]; k == false {
@@ -106,10 +107,14 @@ ConsumerLoop:
 			ap := Apis[msg.Topic]
 
 			cassTry := 0
-
+			queryTimerStartTs := time.Now()
 			getCass:
 				// Pass the query to cassandra as well
+				var hdfsTimeTaken int64
 				message, err := Select(ap.Query, pk)
+				queryTimerEndTs := time.Now()
+				timeTakenCassandra := queryTimerEndTs.Sub(queryTimerStartTs).Nanoseconds() / int64(time.Millisecond)
+				logger.Info("Cassandra query for message %v takes %v ms",pk,timeTakenCassandra)
 				if err != nil {
 					logger.Error("Error processing cassandra request, Error : %v -- Exiting", err)
 					// Before you kill this, save the file for HDFS and try to push that a few times if that goes
@@ -136,7 +141,6 @@ ConsumerLoop:
 						logger.Info("Got after second try! :) ", pk)
 					}
 				}
-
 				for _, v := range message {
 
 					gr, e := MakeGr(v, ap)
@@ -149,17 +153,22 @@ ConsumerLoop:
 						logger.Error("Error when appending to ow file : %v ", err)
 						os.Exit(1)
 					}
+					fmt.Println(" is enabled",influxEnabled)
 
+					if influxEnabled{
+						go writeStatsToInflux(hdfsTimeTaken,timeTakenCassandra,gr,writer)
+					}
 					ap.Inc()
 				}
-
 				if (ap.RecCounter % Conf.Hdfs.RecordsPerAvroFile) == 0 {
 
 					avro_file_manager.RotateFileLoop(ap)
 				}
-
 				mm := fmt.Sprintf("Processed : %v", string(msg.Value))
 				logger.Info(mm)
+				hdpTimeEndTs := time.Now()
+				hdfsTimeTaken = hdpTimeEndTs.Sub(queryTimerStartTs).Nanoseconds() / int64(time.Millisecond)
+				logger.Info("It took %v ms for %v to be processed in hadoop ",hdfsTimeTaken,string(msg.Value))
 
 				consumer.MarkOffset(msg, "")
 			} else {

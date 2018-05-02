@@ -9,6 +9,7 @@ import (
 	"strings"
 	"strconv"
 	"github.com/dminGod/Stream/models"
+	"github.com/dminGod/Stream/influx_writer"
 )
 
 type appConfiguration struct {
@@ -47,7 +48,7 @@ type hdfs struct {
 //AppConfig stores all the information regarding servers, database, applications
 // received from the config file
 type AppConfig struct {
-
+	InfluxDB   influx_writer.InfluxConfig
 	Stream     appConfiguration
 	Cassandra  cassandra
 	Kafka      kafka
@@ -193,10 +194,7 @@ func getConfigFile() (retFilePath string, retErrors []error) {
 		}
 	}
 
-	fmt.Println("flag config file",flagConfigFile)
-
 	if len(flagConfigFile) > 0 {
-		fmt.Println("flag Config File is found <3 ",flagConfigFile)
 		if fileExists(flagConfigFile) {
 
 			retFilePath = flagConfigFile

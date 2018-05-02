@@ -209,8 +209,6 @@ type InField struct {
 
 func NewAvroSP(s []byte) (ap AvroSchemaParser, err error) {
 
-	fmt.Println(string(s))
-
 	json.Unmarshal(s, &ap)
 	if err != nil {
 		return

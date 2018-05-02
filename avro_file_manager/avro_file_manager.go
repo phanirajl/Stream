@@ -275,8 +275,6 @@ func moveFileToHDFS(f os.FileInfo) (res bool, err error) {
 		return
 	}
 
-	fmt.Println(Apis)
-	fmt.Println(app_config.GetApis())
 
 	a, found := Apis.GetByTopic(topic)
 	if found == false {

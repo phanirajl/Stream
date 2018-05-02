@@ -68,23 +68,35 @@ func main() {
 	}
 
 	// Start the actual listening
-	err = KafkaListner()
-	if err != nil {
-		initError([]error{ err })
+	ic := Conf.InfluxDB
+	iw, err := ic.CreateInfluxWriter()
+	if err != nil{
+		logger.Error("Influx DB writer is not available : %v",err)
+		err = KafkaListner(iw,false)
+		if err != nil {
+			initError([]error{ err })
+		}
+
+		logger.Info("Exiting application")
+	} else {
+		err = KafkaListner(iw,true)
+		if err != nil {
+			initError([]error{ err })
+		}
+
+		logger.Info("Exiting application")
 	}
 
-	logger.Info("Exiting application")
+
 }
 
 func InitializeApp() {
 
 	fmt.Println("Starting application..")
 	fmt.Println("Logfolder is : " , Conf.Stream.StreamLogFolder)
-	fmt.Println("Configuration is : " , Conf)
 	fmt.Println("\n---------------\n")
 	fmt.Println(AppVersion)
 	fmt.Println("\n---------------\n")
-	logger.Info(AppVersion)
 	var errs []error
 
 	if len(Conf.Stream.StreamLogFolder) == 0 {
@@ -94,7 +106,7 @@ func InitializeApp() {
 	// Start the logging
 	err := logger.Init( Conf.Stream.StreamLogFolder,	800, 20, 50,	false )
 	if err != nil {
-		fmt.Println("Couldn't initialize logger, Error : ", err)
+		fmt.Printf("Couldn't initialize logger, Error : %v ", err)
 	}
 	logger.SetFilenamePrefix("stream.%P.%U", "stream.%P.%U")
 
