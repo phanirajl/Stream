@@ -41,9 +41,10 @@ func MakeGr(res map[string]interface{}, as *models.APIDetails) (gr []interface{}
 	iudb,_ := as.AvroFields.CheckFieldExists("int_updated_date")
 	icdbc,_ := as.AvroFields.CheckFieldExists("int_created_date_str")
 	iudbc,_ := as.AvroFields.CheckFieldExists("int_updated_date_str")
+	icdc,_ := as.AvroFields.CheckFieldExists("int_created_date_cass")
 	bool_cond1 := false
 
-	if icdb && iudb && icdbc && iudbc{
+	if icdb && iudb && icdbc && iudbc && icdc{
 		bool_cond1 = true
 	}
 	// 2 -- Check for both fields in msg (bool)
@@ -83,6 +84,7 @@ func MakeGr(res map[string]interface{}, as *models.APIDetails) (gr []interface{}
 	if bool_cond1{
 		timeCreated = res["int_created_date"].(int64)/int64(time.Microsecond)
 		res["int_created_date_str"] = convertUnixToTimeString(timeCreated)
+		res["int_created_date_cass"] = res["int_created_date"].(int64)
 		if iudexists {
 			res["int_updated_date_str"] = convertUnixToTimeString(res["int_updated_date"].(int64)/int64(time.Microsecond))
 		} else {
