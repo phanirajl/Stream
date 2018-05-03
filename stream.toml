@@ -1,0 +1,42 @@
+[Stream]
+StreamLogFolder = "/var/log/stream/"  
+
+
+[Cassandra]  
+Hosts = ["10.138.32.80:9042","10.138.32.81:9042"]
+Username = "cassandra"
+Password = "cassandra"
+NumConnectionsPerHost = 10
+ConnectionTimeout = 20000
+SocketKeepAlive = 20000
+NumberOfQueryRetries = 10
+ReadConsistency = 1
+KeySpace = "alltrade_test"
+
+
+[Kafka]      
+KafkaBrokers = [ "10.138.47.83:9092", "10.138.47.84:9092", "10.138.47.85:9092" ]
+
+
+[HDFS]
+HDFSConnPath = "10.138.47.80:8020"
+HdfsStagingFolder = "/tmp"
+RecordsPerAvroFile = 200
+FlushFrequencyMilliSec = 20000
+
+
+[Influxdb]
+   Enabled = true
+   Server = "http://10.138.32.75:8086"
+   DatabaseName = "d30_live" # This database must exist on the influxdb side, create it if you have to
+   Precision = "ms"
+   Measurement = "streamLatency"
+
+
+[[Apis]]
+   KafkaTopic = "local_service_requests_new_con5"
+   AvroSchemaFile = "/etc/stream/lsr.avro"
+   QueryFile = "/etc/stream/lsr.cql"
+   CassCompressedFields = ["local_service_requests_s"]
+   HiveTableName = "hive_man69"
+   HDFSLocation = "/topics/hive_man69"

@@ -16,9 +16,7 @@ import (
 )
 
 // TODO: Only certain types are currently handled -- Other types are not considered
-// TODO: Internal fields are not handled
 // TODO: []byte 107 there is no loop
-// TODO: Integrate influx code with this
 
 
 func convertUnixToTimeString(secsSince int64) (timeString string){
