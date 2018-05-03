@@ -193,6 +193,25 @@ func (a *AvroSchemaParser) GetTypeByName(s string) (typ string, isArr bool, err 
 	return
 }
 
+func (a *AvroSchemaParser) CheckFieldExists(s string) (found bool,err error) {
+
+
+	for _, v := range (*a).Fields {
+
+		if v.Name == s {
+
+			found = true
+		}
+	}
+
+	if found == false {
+
+		err = errors.New(fmt.Sprintf("Could not find field in the schema by the given name, searched for %v", s))
+	}
+
+	return
+}
+
 type Field struct {
 
 	Name string `json:"name"`
@@ -229,7 +248,7 @@ func NewAvroSP(s []byte) (ap AvroSchemaParser, err error) {
 				var tm InField
 				err := mapstructure.Decode(ty, &tm)
 				if err != nil {
-					fmt.Println(err)
+					logger.Error("Error in decoding map string interface ",err)
 				}
 
 				if tm.Type == "array" {

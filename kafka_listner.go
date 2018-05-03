@@ -94,7 +94,6 @@ ConsumerLoop:
 
 		case msg, okk := <-consumer.Messages():
 			logger.Info("messages received : %v ",msg)
-			fmt.Println("message receivwed",msg)
 			if okk {
 
 			if _, k := Apis[msg.Topic]; k == false {
@@ -153,9 +152,12 @@ ConsumerLoop:
 						logger.Error("Error when appending to ow file : %v ", err)
 						os.Exit(1)
 					}
-					fmt.Println(" is enabled",influxEnabled)
-
 					if influxEnabled{
+						if _,ok := gr[0].(map[string]interface{})["int_cass_stream_diff"]; !ok{
+							for idx,_ := range gr{
+								gr[idx].(map[string]interface{})["int_cass_stream_diff"] = 0
+							}
+						}
 						go writeStatsToInflux(hdfsTimeTaken,timeTakenCassandra,gr,writer)
 					}
 					ap.Inc()

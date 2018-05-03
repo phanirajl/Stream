@@ -26,10 +26,9 @@ func writeStatsToInflux(cassT int64,hdfsT int64, keyVal interface{},writer influ
 
 	if ! errorOccured{
 		messageToBeSent := fmt.Sprintf(`%v,StreamID=%v TimeTaken=%v,TimeTakenCass=%v,HDFSMoveTime=%v`,writer.InfluxCfg.Measurement,getHostname(),timeTakenCassStreamDiff,cassT,hdfsT)
-		fmt.Println("Message to be sent is ",messageToBeSent)
 		err := writer.WriteRow(messageToBeSent)
 		if err != nil{
-			fmt.Println("Influx Writer broke",err.Error())
+			logger.Error("error is %v",err)
 		}
 	}
 

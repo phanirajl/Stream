@@ -102,7 +102,7 @@ EOF
 echo -e "Building Stream. Output will be available in builds\\ directory"
 
 mkdir builds 2>/dev/null 
-go build -o builds/stream-${NOW_TRUNC}
+go build -o builds/stream-${NOW_TRUNC} version.go generic_records.go kafka_listner.go cassandra_client.go write_stats_influx.go utils.go stream.go
 
 if [ ! -f builds/stream-${NOW_TRUNC} ]
 then
