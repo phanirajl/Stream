@@ -69,7 +69,8 @@ func KafkaListner(writer influx_writer.InfluxWriter, influxEnabled bool) (err er
 
 
 	defer consumer.Close()
-
+	var hdfsTimeTaken int64
+	var streamTimeTaken int64
 	s := time.Now()
 	logger.Info("Starting Consumer loop, time now : '%v' ", s)
 	tick := time.NewTicker(time.Millisecond * time.Duration(int64(Conf.Hdfs.FlushFrequencyMilliSec)))
@@ -109,7 +110,7 @@ ConsumerLoop:
 			queryTimerStartTs := time.Now()
 			getCass:
 				// Pass the query to cassandra as well
-				var hdfsTimeTaken int64
+
 				message, err := Select(ap.Query, pk)
 				queryTimerEndTs := time.Now()
 				timeTakenCassandra := queryTimerEndTs.Sub(queryTimerStartTs).Nanoseconds() / int64(time.Millisecond)
@@ -152,16 +153,21 @@ ConsumerLoop:
 						logger.Error("Error when appending to ow file : %v ", err)
 						os.Exit(1)
 					}
+
+
 					if influxEnabled{
 						if _,ok := gr[0].(map[string]interface{})["int_cass_stream_diff"]; !ok{
 							for idx,_ := range gr{
 								gr[idx].(map[string]interface{})["int_cass_stream_diff"] = 0
 							}
 						}
-						go writeStatsToInflux(hdfsTimeTaken,timeTakenCassandra,gr,writer)
+						streamTimeTaken = time.Now().Sub(queryTimerStartTs).Nanoseconds() / int64(time.Millisecond)
+
+						go writeStatsToInflux(timeTakenCassandra,streamTimeTaken,gr,writer)
 					}
 					ap.Inc()
 				}
+				hdfsStartTimeTs := time.Now()
 				if (ap.RecCounter % Conf.Hdfs.RecordsPerAvroFile) == 0 {
 
 					avro_file_manager.RotateFileLoop(ap)
@@ -169,9 +175,12 @@ ConsumerLoop:
 				mm := fmt.Sprintf("Processed : %v", string(msg.Value))
 				logger.Info(mm)
 				hdpTimeEndTs := time.Now()
-				hdfsTimeTaken = hdpTimeEndTs.Sub(queryTimerStartTs).Nanoseconds() / int64(time.Millisecond)
+				hdfsTimeTaken = hdpTimeEndTs.Sub(hdfsStartTimeTs).Nanoseconds() / int64(time.Millisecond)
 				logger.Info("It took %v ms for %v to be processed in hadoop ",hdfsTimeTaken,string(msg.Value))
-
+				if influxEnabled{
+					messageToBeSent := fmt.Sprintf(`%v,StreamID=%v HDFSMoveTime=%v`,writer.InfluxCfg.Measurement,getHostname(),hdfsTimeTaken)
+					writer.WriteRow(messageToBeSent)
+				}
 				consumer.MarkOffset(msg, "")
 			} else {
 

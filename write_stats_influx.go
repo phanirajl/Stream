@@ -7,7 +7,7 @@ import (
 	"fmt"
 )
 
-func writeStatsToInflux(cassT int64,hdfsT int64, keyVal interface{},writer influx_writer.InfluxWriter){
+func writeStatsToInflux(cassT int64,streamT int64, keyVal interface{},writer influx_writer.InfluxWriter){
 
 	var timeTakenCassStreamDiff int64
 	errorOccured := false
@@ -25,7 +25,7 @@ func writeStatsToInflux(cassT int64,hdfsT int64, keyVal interface{},writer influ
 	}
 
 	if ! errorOccured{
-		messageToBeSent := fmt.Sprintf(`%v,StreamID=%v TimeTaken=%v,TimeTakenCass=%v,HDFSMoveTime=%v`,writer.InfluxCfg.Measurement,getHostname(),timeTakenCassStreamDiff,cassT,hdfsT)
+		messageToBeSent := fmt.Sprintf(`%v,StreamID=%v TimeTaken=%v,TimeTakenCass=%v,StreamTimeTaken=%v`,writer.InfluxCfg.Measurement,getHostname(),timeTakenCassStreamDiff,cassT,streamT)
 		err := writer.WriteRow(messageToBeSent)
 		if err != nil{
 			logger.Error("error is %v",err)
