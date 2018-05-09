@@ -197,12 +197,18 @@ func returnGeneric(typ string, isArr bool, isComp bool, key string, s interface{
 		if typ == "long" {
 			a = goavro.Union("long", s)
 			found = true
+		} else if typ == "int" {
+			a = goavro.Union("int",s)
+			found = true
 		}
 
 	case int:
 		if typ == "long" {
 			a = goavro.Union("long", s)
 			isBlank = false
+			found = true
+		}  else if typ == "int" {
+			a = goavro.Union("int",s)
 			found = true
 		}
 
