@@ -78,7 +78,10 @@ func Select(qry string, pkRef string) ([]map[string]interface{}, error) {
 	// TODO: This should come from the config
 	session.SetConsistency(gocql.One)
 
-	iter := session.Query(qry, pkRef).Iter()
+	query := session.Query(qry, pkRef)
+	iter := query.Iter()
+
+	defer query.Release()
 
 	result, err := iter.SliceMap()
 	if err != nil {

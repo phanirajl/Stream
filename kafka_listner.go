@@ -60,13 +60,12 @@ func KafkaListner(writer influx_writer.InfluxWriter, influxEnabled bool) (err er
 
 	// trap SIGINT to trigger a shutdown.
 	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt)
+	signal.Notify(signals, os.Interrupt, os.Kill)
 
 	consumer, err := getKafkaConsumer()
 	if err != nil {
 		return
 	}
-
 
 	defer consumer.Close()
 	var hdfsTimeTaken int64
@@ -167,11 +166,14 @@ ConsumerLoop:
 					}
 					ap.Inc()
 				}
+
 				hdfsStartTimeTs := time.Now()
+
 				if (ap.RecCounter % Conf.Hdfs.RecordsPerAvroFile) == 0 {
 
 					avro_file_manager.RotateFileLoop(ap)
 				}
+
 				mm := fmt.Sprintf("Processed : %v", string(msg.Value))
 				logger.Info(mm)
 				hdpTimeEndTs := time.Now()
@@ -187,7 +189,23 @@ ConsumerLoop:
 				logger.Error("Problem with message that came in : msg is : %v ", msg)
 			}
 
-		case <-signals:
+		case ss := <-signals:
+
+			logger.Info("Got '%v' signal, going into graceful exit : Attempting to close : %v Files -- (%v)", ss, len(Apis), Apis)
+
+			for _, v := range Apis {
+
+				logger.Info("Calling final close for Topic: %v, File: %v ", v.KafkaTopic, v.CurFile.Name())
+				err := avro_file_manager.ExitCloseMoveFile( v )
+
+				if err != nil {
+					logger.Error("Error in rotating file on ticker - Topic : %v -- File : %v -- Error : %v", v.KafkaTopic, v.CurFile.Name(), err)
+				}
+			}
+
+			logger.Info("App Exit 0")
+			os.Exit(0)
+
 			break ConsumerLoop
 		}
 	}

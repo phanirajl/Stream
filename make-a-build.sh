@@ -99,6 +99,13 @@ Git Status: "${GITSTATUS}"
 
 EOF
 
+if [ $? != 0 ]; then
+        echo "Failed to write version info. Exiting"
+        exit 1
+fi
+
+
+
 echo -e "Building Stream. Output will be available in builds\\ directory"
 
 mkdir builds 2>/dev/null 

@@ -378,3 +378,40 @@ func RotateFileLoop(ap *models.APIDetails) (err error) {
 
 	return
 }
+
+func ExitCloseMoveFile(ap *models.APIDetails) (err error) {
+
+	if (*ap).RecCounter == 0 {
+		return
+	}
+
+	fn := (ap).CurFile.Name()
+	rfn := strings.Replace(fn, "/tmp/", "", 1)
+	(*(ap).CurFile).Close()
+
+	hdfsClient, err := getHdfsClient()
+	if err != nil {
+		return
+	}
+
+	err = hdfsClient.CopyToRemote(fn, path.Join((ap).HDFSLocation, rfn))
+	if err != nil {
+
+		logger.Error("Error moving file '%v' to HDFS while graceful shutdown, %v", fn, err)
+		return
+	} else {
+
+		err := os.Remove(fn)
+		if err != nil {
+			logger.Error("Error deleting local file '%v', Error : '%v'", err.Error())
+		}
+	}
+
+	(*ap).ResetCounter()
+	(*ap).FileProcessTime = time.Now()
+
+	return
+}
+
+
+
