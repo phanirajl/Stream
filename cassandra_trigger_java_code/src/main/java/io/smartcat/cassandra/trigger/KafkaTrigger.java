@@ -45,9 +45,9 @@ import org.yaml.snakeyaml.Yaml;
 public class KafkaTrigger implements ITrigger {
 
     private static final String FILE_PATH = "/etc/cassandra/triggers/KafkaTrigger.yml";
-    private static final String TOPIC_NAME = "topic.name";
+    //private static final String TOPIC_NAME = "topic.name";
 
-    private final String topic;    
+    //private final String topic;
     private final Producer<String, String> producer;
     private final ThreadPoolExecutor threadPoolExecutor;
     
@@ -55,7 +55,7 @@ public class KafkaTrigger implements ITrigger {
 
     public KafkaTrigger() {
         Map<String, Object> configuration = loadConfiguration();
-        topic = (String) getProperty(TOPIC_NAME, configuration);
+        //topic = (String) getProperty(TOPIC_NAME, configuration);
                                 
         StringSerializer keySerializer = getSerializer(configuration, true);
         StringSerializer valueSerializer = getSerializer(configuration, false);
